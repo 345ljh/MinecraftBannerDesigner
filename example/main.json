@@ -220,3 +220,10 @@
         ]
     }
 }
+
+
+// 格式
+r,c;r_pos,c_pos,col_bg,col_p1,pat_p1,...,col_p6,pat_p6;...
+
+3,3;2,1,0,ms,15,bs,15,bo,0,ls,0,ts,15,ts,0;...
+包括no

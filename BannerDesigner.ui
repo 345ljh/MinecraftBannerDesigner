@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BannerDesigner</class>
+ <widget class="QWidget" name="BannerDesigner">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>BannerDesigner</string>
+  </property>
+  <property name="styleSheet">
+   <string>QGroupBox { font-weight: bold; }</string>
+  </property>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>825</x>
+     <y>100</y>
+     <width>350</width>
+     <height>450</height>
+    </rect>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>348</width>
+      <height>448</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>-1</x>
+       <y>-1</y>
+       <width>351</width>
+       <height>451</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="GridLayout"/>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QSpinBox" name="RowSpinBox">
+   <property name="geometry">
+    <rect>
+     <x>900</x>
+     <y>20</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>2</number>
+   </property>
+   <property name="maximum">
+    <number>64</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="RowLabel">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>20</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>行数</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="ColumnSpinBox">
+   <property name="geometry">
+    <rect>
+     <x>900</x>
+     <y>60</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>2</number>
+   </property>
+   <property name="maximum">
+    <number>64</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ColumnLabel">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>60</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>列数</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

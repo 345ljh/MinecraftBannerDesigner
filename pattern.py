@@ -2,22 +2,22 @@ import cv2
 from PyQt5.QtGui import QColor
 
 color = {
-    "white": QColor(255, 255, 255),
-    "orange": QColor(255, 128, 0),
-    "magenta": QColor(255, 0, 255),
-    "light_blue": QColor(128, 128, 255),
-    "yellow": QColor(255, 255, 0),
-    "lime": QColor(128, 255, 0),
-    "pink": QColor(255, 128, 128),
-    "gray": QColor(128, 128, 128),
-    "light_gray": QColor(192, 192, 192),
-    "cyan": QColor(0, 255, 255),
-    "purple": QColor(128, 0, 128),
-    "blue": QColor(0, 0, 255),
-    "brown": QColor(128, 64, 0),
-    "green": QColor(0, 128, 0),
-    "red": QColor(255, 0, 0),
-    "black": QColor(0, 0, 0)
+    "white": QColor(239, 239, 239),
+    "orange": QColor(239, 124, 28),
+    "magenta": QColor(216, 84, 205),
+    "light_blue": QColor(68, 194, 236),
+    "yellow": QColor(239, 232, 66),
+    "lime": QColor(138, 214, 33),
+    "pink": QColor(241, 134, 164),
+    "gray": QColor(69, 77, 80),
+    "light_gray": QColor(169, 169, 169),
+    "cyan": QColor(24, 169, 169),
+    "purple": QColor(147, 54, 198),
+    "blue": QColor(65, 74, 184),
+    "brown": QColor(142, 91,54),
+    "green": QColor(101, 134, 24),
+    "red": QColor(191, 50, 40),
+    "black": QColor(30, 30, 30)
 }
 
 type = [

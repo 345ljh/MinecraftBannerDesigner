@@ -7,8 +7,6 @@ import ui_single_banner_designer
 import PatternSelector
 import pattern
 
-import cv2
-
 
 class BannerDisplayer(QWidget):
     def __init__(self, parent=None):
@@ -54,6 +52,8 @@ class BannerDisplayer(QWidget):
 
 
 class SingleBannerDesigner(QWidget):
+    PatternChanged = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.ui = ui_single_banner_designer.Ui_SingleBannerDesigner()
@@ -91,6 +91,7 @@ class SingleBannerDesigner(QWidget):
         
         # 初始显示
         self.BannerDisplay()
+        # self.LoadPattern("0,ms,15,bs,15,bo,0,ls,0,ts,15,ts,0")
 
     def replaceBannerPainter(self):
         old_widget = self.ui.BannerPainter
@@ -122,6 +123,7 @@ class SingleBannerDesigner(QWidget):
             old_widget.deleteLater()
 
     def BannerDisplay(self):
+        self.PatternChanged.emit()
         # 设置背景颜色
         bg_color = pattern.color[self.ui.BannerColorComboBox.currentText()]
         self.banner_displayer.setBackgroundColor(bg_color)
@@ -136,6 +138,13 @@ class SingleBannerDesigner(QWidget):
 
         self.banner_displayer.setPatternsData(patterns_data)
 
+    def LoadPattern(self, str):
+        # 单旗帜表示,形如"0,ms,15,bs,15,bo,0,ls,0,ts,15,ts,0",长度13
+        splited = str.split(',')
+        self.ui.BannerColorComboBox.setCurrentIndex(int(splited[0]))
+        for i in range(6):
+            self.ui.PatternVLayout.itemAt(i).widget().button_group.button(pattern.type.index(splited[2*i+1])).setChecked(True)
+            self.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.setCurrentIndex(int(splited[2*i+2]))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

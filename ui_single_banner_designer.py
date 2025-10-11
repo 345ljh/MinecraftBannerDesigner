@@ -38,6 +38,9 @@ class Ui_SingleBannerDesigner(object):
         self.PatternVLayout.setContentsMargins(0, 0, 0, 0)
         self.PatternVLayout.setObjectName("PatternVLayout")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.SaveButton = QtWidgets.QPushButton(SingleBannerDesigner)
+        self.SaveButton.setGeometry(QtCore.QRect(90, 480, 100, 40))
+        self.SaveButton.setObjectName("SaveButton")
 
         self.retranslateUi(SingleBannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(SingleBannerDesigner)
@@ -47,6 +50,7 @@ class Ui_SingleBannerDesigner(object):
         SingleBannerDesigner.setWindowTitle(_translate("SingleBannerDesigner", "SingleBannerDesigner"))
         SingleBannerDesigner.setStyleSheet(_translate("SingleBannerDesigner", "QGroupBox { font-weight: bold; }"))
         self.BannerColorLabel.setText(_translate("SingleBannerDesigner", "旗帜颜色"))
+        self.SaveButton.setText(_translate("SingleBannerDesigner", "保存"))
 
 
 if __name__ == "__main__":
