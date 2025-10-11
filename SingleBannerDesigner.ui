@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SingleBannerDesigner</class>
+ <widget class="QWidget" name="SingleBannerDesigner">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SingleBannerDesigner</string>
+  </property>
+  <property name="styleSheet">
+   <string>QGroupBox { font-weight: bold; }</string>
+  </property>
+  <widget class="QWidget" name="BannerPainter" native="true">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>40</y>
+     <width>200</width>
+     <height>400</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="BannerColorComboBox">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>40</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="BannerColorLabel">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>40</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>旗帜颜色</string>
+   </property>
+  </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>100</y>
+     <width>501</width>
+     <height>451</height>
+    </rect>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>499</width>
+      <height>449</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>501</width>
+       <height>451</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="PatternVLayout"/>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
