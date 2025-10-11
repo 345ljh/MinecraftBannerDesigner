@@ -91,7 +91,7 @@ class SingleBannerDesigner(QWidget):
         
         # 初始显示
         self.BannerDisplay()
-        # self.LoadPattern("0,ms,15,bs,15,bo,0,ls,0,ts,15,ts,0")
+        # self.LoadPattern("0,10,15,5,15,30,0,7,0,6,15,6,0")
 
     def replaceBannerPainter(self):
         old_widget = self.ui.BannerPainter
@@ -143,7 +143,7 @@ class SingleBannerDesigner(QWidget):
         splited = str.split(',')
         self.ui.BannerColorComboBox.setCurrentIndex(int(splited[0]))
         for i in range(6):
-            self.ui.PatternVLayout.itemAt(i).widget().button_group.button(pattern.type.index(splited[2*i+1])).setChecked(True)
+            self.ui.PatternVLayout.itemAt(i).widget().button_group.button(int(splited[2*i+1])).setChecked(True)
             self.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.setCurrentIndex(int(splited[2*i+2]))
 
 if __name__ == '__main__':

@@ -60,9 +60,8 @@ class BannerDesigner(QWidget):
                 self.ui.GridLayout.addWidget(button, i, j)
                 button.clicked.connect(lambda checked, i=i, j=j: self.GridButtonClicked(i, j))
                 if(f"{_i},{j}" not in self.banner_pattern):
-                    self.banner_pattern[f"{_i},{j}"] = "0,no,0,no,0,no,0,no,0,no,0,no,0"
+                    self.banner_pattern[f"{_i},{j}"] = "0,0,0,0,0,0,0,0,0,0,0,0,0"
 
-        print(self.ui.RowSpinBox.value())
         self.GridButtonClicked(self.ui.RowSpinBox.value() - 2, 0)
 
 
@@ -81,7 +80,7 @@ class BannerDesigner(QWidget):
         self.ui.GridLayout.itemAtPosition(self.now_banner[0], self.now_banner[1]).widget().setStyleSheet("background-color: rgb(128, 255, 128)")
         s = f"{self.single_designer.ui.BannerColorComboBox.currentIndex()},"
         for i in range(6):
-            s += f"{pattern.type[self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()]}, \
+            s += f"{self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()}, \
             {self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()},"
         self.banner_pattern[f"{self.ui.RowSpinBox.value() - self.now_banner[0] - 1},{self.now_banner[1]}"] = s
 
