@@ -91,7 +91,6 @@ class SingleBannerDesigner(QWidget):
         
         # 初始显示
         self.BannerDisplay()
-        # self.LoadPattern("0,10,15,5,15,30,0,7,0,6,15,6,0")
 
     def replaceBannerPainter(self):
         old_widget = self.ui.BannerPainter
@@ -139,8 +138,11 @@ class SingleBannerDesigner(QWidget):
         self.banner_displayer.setPatternsData(patterns_data)
 
     def LoadPattern(self, str):
-        # 单旗帜表示,形如"0,ms,15,bs,15,bo,0,ls,0,ts,15,ts,0",长度13
-        splited = str.split(',')
+        # 单旗帜表示,长度13
+        splited = str.split(':')
+        # 补0
+        while len(splited) < 13:
+            splited.append('0')
         self.ui.BannerColorComboBox.setCurrentIndex(int(splited[0]))
         for i in range(6):
             self.ui.PatternVLayout.itemAt(i).widget().button_group.button(int(splited[2*i+1])).setChecked(True)
