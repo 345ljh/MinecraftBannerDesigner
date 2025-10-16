@@ -137,20 +137,7 @@
     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="FileButton">
-   <property name="geometry">
-    <rect>
-     <x>500</x>
-     <y>10</y>
-     <width>100</width>
-     <height>40</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>打开文件</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="SaveButton">
+  <widget class="QPushButton" name="OpenFileButton">
    <property name="geometry">
     <rect>
      <x>640</x>
@@ -160,7 +147,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>保存设计</string>
+    <string>打开文件</string>
    </property>
   </widget>
   <widget class="QComboBox" name="DesignSelectComboBox">
@@ -225,6 +212,32 @@
    </property>
    <property name="text">
     <string>添加</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="SaveFileButton">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>10</y>
+     <width>100</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存文件</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="CommandButton">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>10</y>
+     <width>100</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>生成指令</string>
    </property>
   </widget>
  </widget>

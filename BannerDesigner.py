@@ -13,11 +13,11 @@ class BannerDesigner(QWidget):
         self.ui = ui_banner_designer.Ui_BannerDesigner()
         self.ui.setupUi(self)
 
-        self.now_banner = [0, 0]
-        self.now_design_name = ""
-        self.banner_pattern = {}
         self.filepath = ""
         self.designs = {}
+        self.current_design_name = ""
+        self.current_banner = [0, 0]
+        self.current_banner_pattern = {}
 
         self.single_designer = SingleBannerDesigner.SingleBannerDesigner()
         self.single_designer.setGeometry(0, 100, 800, 600)
@@ -46,8 +46,9 @@ class BannerDesigner(QWidget):
         self.ui.RowSpinBox.valueChanged.connect(self.UpdateGridButton)
         self.single_designer.ui.SaveButton.clicked.connect(self.SaveBanner)
         self.single_designer.PatternChanged.connect( # 修改后提示未保存 
-            lambda: self.ui.GridLayout.itemAtPosition(self.now_banner[0], self.now_banner[1]).widget().setStyleSheet("background-color: rgb(255, 128, 128)"))
-        self.ui.FileButton.clicked.connect(self.OpenFile)
+            lambda: self.ui.GridLayout.itemAtPosition(self.current_banner[0], self.current_banner[1]).widget().setStyleSheet("background-color: rgb(255, 128, 128)"))
+        self.ui.OpenFileButton.clicked.connect(self.OpenFile)
+        self.ui.SaveFileButton.clicked.connect(self.SaveFile)
         self.ui.DesignSelectComboBox.currentIndexChanged.connect(lambda: self.LoadDesign(self.ui.DesignSelectComboBox.currentText()))
         self.ui.NewDesignButton.clicked.connect(self.NewDesign)
 
@@ -66,30 +67,37 @@ class BannerDesigner(QWidget):
                 button.setStyleSheet("background-color: white")
                 self.ui.GridLayout.addWidget(button, i, j)
                 button.clicked.connect(lambda checked, i=i, j=j: self.GridButtonClicked(i, j))
-                if(f"{_i}:{j}" not in self.banner_pattern):
-                    self.banner_pattern[f"{_i}:{j}"] = "0:0:0:0:0:0:0:0:0:0:0:0:0"
+                if(f"{_i}:{j}" not in self.current_banner_pattern):
+                    self.current_banner_pattern[f"{_i}:{j}"] = "0:0:0:0:0:0:0:0:0:0:0:0:0"
 
         self.GridButtonClicked(self.ui.RowSpinBox.value() - 2, 0)
 
     def GridButtonClicked(self, i, j):
         try:  # 防减少行列数越界
-            self.ui.GridLayout.itemAtPosition(self.now_banner[0], self.now_banner[1]).widget().setStyleSheet("background-color: white")
+            self.ui.GridLayout.itemAtPosition(self.current_banner[0], self.current_banner[1]).widget().setStyleSheet("background-color: white")
         except:
             pass
-        self.now_banner = [i, j]
+        self.current_banner = [i, j]
         self.ui.GridLayout.itemAtPosition(i, j).widget().setStyleSheet("background-color: rgb(255, 128, 128)")
 
         _i = self.ui.RowSpinBox.value() - i - 1
-        self.single_designer.LoadPattern(self.banner_pattern[f"{_i}:{j}"])
+        self.single_designer.LoadPattern(self.current_banner_pattern[f"{_i}:{j}"])
 
     def SaveBanner(self):  # 暂存旗帜
-        self.ui.GridLayout.itemAtPosition(self.now_banner[0], self.now_banner[1]).widget().setStyleSheet("background-color: rgb(128, 255, 128)")
+        self.ui.GridLayout.itemAtPosition(self.current_banner[0], self.current_banner[1]).widget().setStyleSheet("background-color: rgb(128, 255, 128)")
         s = f"{self.single_designer.ui.BannerColorComboBox.currentIndex()}:"
         for i in range(6):
-            s += f"{self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()}: \
-            {self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()}:"
-        self.banner_pattern[f"{self.ui.RowSpinBox.value() - self.now_banner[0] - 1}:{self.now_banner[1]}"] = s
-        
+            s += f"{self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()}:{self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()}:"
+        self.current_banner_pattern[f"{self.ui.RowSpinBox.value() - self.current_banner[0] - 1}:{self.current_banner[1]}"] = s[:-1]
+        self.SaveDesign()
+
+    def SaveDesign(self): 
+        current_design_value = []
+        for key in self.current_banner_pattern.keys():
+            current_design_value.append(str(key) + ":" + str(self.current_banner_pattern[key]))
+
+        self.designs[self.current_design_name] = [str(self.ui.RowSpinBox.value()), str(self.ui.ColumnSpinBox.value()), current_design_value]
+
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         if path:
@@ -134,9 +142,25 @@ class BannerDesigner(QWidget):
                         self.ui.DesignSelectComboBox.setCurrentIndex(0)
                         self.LoadDesign(self.ui.DesignSelectComboBox.itemText(0))
 
+    def SaveFile(self):
+        # 检查路径是否为空
+        if self.filepath == "":
+            self.filepath, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
+        # 打开文件
+        with open(self.filepath, "w") as f:
+            for name in self.designs:
+                design = self.designs[name]
+                design_str = f"{name},{design[0]},{design[1]},"
+                for banner in design[2]:
+                    design_str = design_str + banner + ","
+                print(design_str)
+                # f.writelines(design_str[:-1])
+                f.write(f"{design_str[:-1]}\n")
+
+
     def LoadDesign(self, name: str):
-        if name != "" and name in self.designs and self.banner_pattern != {}:
-            self.banner_pattern = {}
+        if name != "" and name in self.designs and self.current_banner_pattern != {}:
+            self.current_banner_pattern = {}
             # 记录坐标
             self.ui.RowSpinBox.setValue(int(self.designs[name][0]))
             self.ui.ColumnSpinBox.setValue(int(self.designs[name][1]))
@@ -145,10 +169,11 @@ class BannerDesigner(QWidget):
             for b in self.designs[name][2]:
                 if b != "":
                     p = b.split(":", 2)
-                    self.banner_pattern[f"{p[0]}:{p[1]}"] = p[2]
-            self.now_banner = [0, 0]
+                    self.current_banner_pattern[f"{p[0]}:{p[1]}"] = p[2]
+            self.current_banner = [0, 0]
             self.GridButtonClicked(self.ui.RowSpinBox.value() - 2, 0)
-            self.single_designer.LoadPattern(self.banner_pattern["1:0"])
+            self.single_designer.LoadPattern(self.current_banner_pattern["1:0"])
+            self.current_design_name = name
             return True
         else:
             return False
@@ -156,6 +181,9 @@ class BannerDesigner(QWidget):
     def NewDesign(self):
         name = self.ui.NewDesignTextEdit.toPlainText()
         if name != "":
+            if ',' in name or ':' in name:
+                self.ui.NewDesignTextEdit.setPlainText("无效的名称")
+                return
             if not self.LoadDesign(name):
                 self.designs[name] = ['2', '2', ['1:0:0:0:0:0:0:0:0:0:0:0:0:0:0', '1:1:0:0:0:0:0:0:0:0:0:0:0:0:0', '']]  # 初始化设计
             self.ui.NewDesignTextEdit.setPlainText("")
