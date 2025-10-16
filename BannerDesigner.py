@@ -14,10 +14,10 @@ class BannerDesigner(QWidget):
         self.ui.setupUi(self)
 
         self.now_banner = [0, 0]
-        self.now_banner_name = ""
+        self.now_design_name = ""
         self.banner_pattern = {}
         self.filepath = ""
-        self.fileload = {}
+        self.designs = {}
 
         self.single_designer = SingleBannerDesigner.SingleBannerDesigner()
         self.single_designer.setGeometry(0, 100, 800, 600)
@@ -48,7 +48,8 @@ class BannerDesigner(QWidget):
         self.single_designer.PatternChanged.connect( # 修改后提示未保存 
             lambda: self.ui.GridLayout.itemAtPosition(self.now_banner[0], self.now_banner[1]).widget().setStyleSheet("background-color: rgb(255, 128, 128)"))
         self.ui.FileButton.clicked.connect(self.OpenFile)
-        self.ui.BannerSelectComboBox.currentIndexChanged.connect(lambda: self.LoadBanner(self.ui.BannerSelectComboBox.currentText()))
+        self.ui.DesignSelectComboBox.currentIndexChanged.connect(lambda: self.LoadDesign(self.ui.DesignSelectComboBox.currentText()))
+        self.ui.NewDesignButton.clicked.connect(self.NewDesign)
 
     def UpdateGridButton(self):
         while self.ui.GridLayout.count():
@@ -92,11 +93,11 @@ class BannerDesigner(QWidget):
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         if path:
-            self.fileload = {}
+            self.designs = {}
             self.filepath = path
             self.ui.FilePathLabel.setText(path)
             if os.path.exists(path):
-                self.ui.BannerSelectComboBox.clear()
+                self.ui.DesignSelectComboBox.clear()
                 # 按照csv格式解析
                 # 名称,行数,列数,旗帜0,旗帜1,...
                 with open(path, "r") as f:
@@ -126,30 +127,42 @@ class BannerDesigner(QWidget):
                             print(e)
                             continue
                         # 存储
-                        self.fileload[line[0]] = [line[1], line[2], line[3:]]
-                        self.ui.BannerSelectComboBox.addItem(line[0])
+                        self.designs[line[0]] = [line[1], line[2], line[3:]]
+                        self.ui.DesignSelectComboBox.addItem(line[0])
                     # 加载第一个
-                    if self.fileload != {}:
-                        self.ui.BannerSelectComboBox.setCurrentIndex(0)
-                        self.LoadBanner(self.ui.BannerSelectComboBox.itemText(0))
+                    if self.designs != {}:
+                        self.ui.DesignSelectComboBox.setCurrentIndex(0)
+                        self.LoadDesign(self.ui.DesignSelectComboBox.itemText(0))
 
-    def LoadBanner(self, name: str):
-        if name != "" and name in self.fileload and self.banner_pattern != {}:
+    def LoadDesign(self, name: str):
+        if name != "" and name in self.designs and self.banner_pattern != {}:
             self.banner_pattern = {}
             # 记录坐标
-            self.ui.RowSpinBox.setValue(int(self.fileload[name][0]))
-            self.ui.ColumnSpinBox.setValue(int(self.fileload[name][1]))
+            self.ui.RowSpinBox.setValue(int(self.designs[name][0]))
+            self.ui.ColumnSpinBox.setValue(int(self.designs[name][1]))
             self.UpdateGridButton()
             # 依次存储单面旗帜字符串
-            for b in self.fileload[name][2]:
+            for b in self.designs[name][2]:
                 if b != "":
                     p = b.split(":", 2)
                     self.banner_pattern[f"{p[0]}:{p[1]}"] = p[2]
             self.now_banner = [0, 0]
             self.GridButtonClicked(self.ui.RowSpinBox.value() - 2, 0)
             self.single_designer.LoadPattern(self.banner_pattern["1:0"])
+            return True
+        else:
+            return False
 
-
+    def NewDesign(self):
+        name = self.ui.NewDesignTextEdit.toPlainText()
+        if name != "":
+            if not self.LoadDesign(name):
+                self.designs[name] = ['2', '2', ['1:0:0:0:0:0:0:0:0:0:0:0:0:0:0', '1:1:0:0:0:0:0:0:0:0:0:0:0:0:0', '']]  # 初始化设计
+            self.ui.NewDesignTextEdit.setPlainText("")
+            self.ui.DesignSelectComboBox.addItem(name)
+            self.ui.DesignSelectComboBox.setCurrentText(name)
+        else:
+            self.ui.NewDesignTextEdit.setPlainText("设计名不能为空")
 
 
 if __name__ == '__main__':
