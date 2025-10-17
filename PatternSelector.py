@@ -44,7 +44,7 @@ class PatternSelector(QWidget):
         self.button_group = QButtonGroup(self)
         for i, name in enumerate(pattern.type):
             icon = pattern.getIcon(name)
-            icon_qimage = QImage(icon.tobytes(), 20, 40, 20, QImage.Format_Grayscale8)
+            icon_qimage = QImage((255 - icon).tobytes(), 20, 40, 20, QImage.Format_Grayscale8)
 
             radio = QRadioButton()
             radio.setIcon(QIcon(QPixmap.fromImage(icon_qimage)))

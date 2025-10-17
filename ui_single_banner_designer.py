@@ -39,8 +39,14 @@ class Ui_SingleBannerDesigner(object):
         self.PatternVLayout.setObjectName("PatternVLayout")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.SaveButton = QtWidgets.QPushButton(SingleBannerDesigner)
-        self.SaveButton.setGeometry(QtCore.QRect(90, 480, 100, 40))
+        self.SaveButton.setGeometry(QtCore.QRect(90, 520, 100, 40))
         self.SaveButton.setObjectName("SaveButton")
+        self.CopyBannerButton = QtWidgets.QPushButton(SingleBannerDesigner)
+        self.CopyBannerButton.setGeometry(QtCore.QRect(30, 460, 100, 40))
+        self.CopyBannerButton.setObjectName("CopyBannerButton")
+        self.PasteBannerButton = QtWidgets.QPushButton(SingleBannerDesigner)
+        self.PasteBannerButton.setGeometry(QtCore.QRect(150, 460, 100, 40))
+        self.PasteBannerButton.setObjectName("PasteBannerButton")
 
         self.retranslateUi(SingleBannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(SingleBannerDesigner)
@@ -51,6 +57,8 @@ class Ui_SingleBannerDesigner(object):
         SingleBannerDesigner.setStyleSheet(_translate("SingleBannerDesigner", "QGroupBox { font-weight: bold; }"))
         self.BannerColorLabel.setText(_translate("SingleBannerDesigner", "旗帜颜色"))
         self.SaveButton.setText(_translate("SingleBannerDesigner", "保存"))
+        self.CopyBannerButton.setText(_translate("SingleBannerDesigner", "复制"))
+        self.PasteBannerButton.setText(_translate("SingleBannerDesigner", "粘贴"))
 
 
 if __name__ == "__main__":

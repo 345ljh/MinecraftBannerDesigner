@@ -1,10 +1,7 @@
-import PIL.Image
-import PIL.ImageDraw
-import PIL.ImageTk
-from PyQt5.QtWidgets import (QApplication, QLabel, QWidget, QGridLayout, QSizePolicy, QPushButton, QFileDialog, QVBoxLayout)
+from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QSizePolicy, QPushButton, QFileDialog)
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
-import sys, os, tkinter
+from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence
+import sys, os
 import PIL
 
 import SingleBannerDesigner
@@ -22,6 +19,7 @@ class BannerDesigner(QWidget):
         self.current_design_name = ""
         self.current_banner = [0, 0]
         self.current_banner_pattern = {}
+        self.clipboard = ""
 
         self.displaywindow = None
 
@@ -58,6 +56,27 @@ class BannerDesigner(QWidget):
         self.ui.DesignSelectComboBox.currentIndexChanged.connect(lambda: self.LoadDesign(self.ui.DesignSelectComboBox.currentText()))
         self.ui.NewDesignButton.clicked.connect(self.NewDesign)
         self.ui.DisplayButton.clicked.connect(self.DisplayDesign)
+        self.ui.CommandButton.clicked.connect(self.GenerateCommand)
+        self.single_designer.ui.CopyBannerButton.clicked.connect(self.CopyBanner)
+        self.single_designer.ui.PasteBannerButton.clicked.connect(self.PasteBanner)
+
+        # 快捷键
+        # 单面旗帜操作
+        self.shortcut_copy = QShortcut(QKeySequence("Ctrl+C"), self)
+        self.shortcut_copy.activated.connect(self.CopyBanner)
+        self.shortcut_paste = QShortcut(QKeySequence("Ctrl+V"), self)
+        self.shortcut_paste.activated.connect(self.PasteBanner)
+        self.shortcut_save = QShortcut(QKeySequence("Ctrl+S"), self)
+        self.shortcut_save.activated.connect(self.SaveBanner)
+        # 设计层面操作
+        self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+Shift+N"), self)
+        self.shortcut_new_design.activated.connect(self.NewDesign)
+        self.shortcut_openfile = QShortcut(QKeySequence("Ctrl+Shift+O"), self)
+        self.shortcut_openfile.activated.connect(self.OpenFile)
+        self.shortcut_savefile = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
+        self.shortcut_savefile.activated.connect(self.SaveFile)
+        self.shortcut_generate_command = QShortcut(QKeySequence("Ctrl+Shift+Q"), self)
+        self.shortcut_generate_command.activated.connect(self.GenerateCommand)
 
     def UpdateGridButton(self):
         while self.ui.GridLayout.count():
@@ -253,6 +272,50 @@ class BannerDesigner(QWidget):
         
         self.display_window.paintEvent = paintEvent
         self.display_window.show()
+
+    def CopyBanner(self):
+        self.clipboard = self.current_banner_pattern[f"{self.ui.RowSpinBox.value() - self.current_banner[0] - 1}:{self.current_banner[1]}"] 
+
+    def PasteBanner(self):
+        self.current_banner_pattern[f"{self.ui.RowSpinBox.value() - self.current_banner[0] - 1}:{self.current_banner[1]}"] = self.clipboard
+        self.single_designer.LoadPattern(self.clipboard)
+
+    def GenerateCommand(self):
+        command = ""
+        generated_num = 0
+
+        for i in range(self.ui.RowSpinBox.value() - 1):
+            _i = self.ui.RowSpinBox.value() - i - 1
+            for j in range(self.ui.ColumnSpinBox.value()):
+                if generated_num % 27 == 0:
+                    # 指令前缀, 缩进似乎会影响指令执行, 因此不缩进不换行
+                    command += f'''/give @p minecraft:chest{{display: {{Name: '{{"text":"{self.current_design_name}","color":"gold"}}'}},BlockEntityTag:{{Items:['''
+
+                # 旗帜属性    
+                now_banner = self.current_banner_pattern[f"{_i}:{j}"].split(":")
+                command += f'''{{Slot:{generated_num % 27}b,id:"minecraft:{pattern.color_name[int(now_banner[0])]}_banner",Count:1b,tag:{{display: {{Name: '{{"text":"{_i}_{j}"}}'}},'''
+
+                # 判断是否需要添加图案, 即[1:2:13]是否全为'0
+                if now_banner[1::2] != ['0', '0', '0', '0', '0', '0']:
+
+                    command += f'''BlockEntityTag:{{Patterns:['''
+
+                    for k in range(6):
+                        if int(now_banner[2 * k + 1]) != 0:
+                            command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
+                    command += f"]}}"
+
+                command += f'''}}}},'''
+
+                if generated_num % 27 == 26 or generated_num == len(self.current_banner_pattern) - 1:
+                    # 指令后缀
+                    command += f''']}}}}
+                    ___________________________
+                    '''
+
+                generated_num += 1
+        print(command)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
