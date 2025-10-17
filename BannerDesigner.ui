@@ -230,14 +230,27 @@
   <widget class="QPushButton" name="CommandButton">
    <property name="geometry">
     <rect>
-     <x>880</x>
-     <y>10</y>
+     <x>1020</x>
+     <y>60</y>
      <width>100</width>
      <height>40</height>
     </rect>
    </property>
    <property name="text">
     <string>生成指令</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="DisplayButton">
+   <property name="geometry">
+    <rect>
+     <x>1020</x>
+     <y>10</y>
+     <width>100</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>预览效果</string>
    </property>
   </widget>
  </widget>

@@ -78,8 +78,11 @@ class Ui_BannerDesigner(object):
         self.SaveFileButton.setGeometry(QtCore.QRect(760, 10, 100, 40))
         self.SaveFileButton.setObjectName("SaveFileButton")
         self.CommandButton = QtWidgets.QPushButton(BannerDesigner)
-        self.CommandButton.setGeometry(QtCore.QRect(880, 10, 100, 40))
+        self.CommandButton.setGeometry(QtCore.QRect(1020, 60, 100, 40))
         self.CommandButton.setObjectName("CommandButton")
+        self.DisplayButton = QtWidgets.QPushButton(BannerDesigner)
+        self.DisplayButton.setGeometry(QtCore.QRect(1020, 10, 100, 40))
+        self.DisplayButton.setObjectName("DisplayButton")
 
         self.retranslateUi(BannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(BannerDesigner)
@@ -97,6 +100,7 @@ class Ui_BannerDesigner(object):
         self.NewDesignButton.setText(_translate("BannerDesigner", "添加"))
         self.SaveFileButton.setText(_translate("BannerDesigner", "保存文件"))
         self.CommandButton.setText(_translate("BannerDesigner", "生成指令"))
+        self.DisplayButton.setText(_translate("BannerDesigner", "预览效果"))
 
 
 if __name__ == "__main__":

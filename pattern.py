@@ -1,24 +1,25 @@
 import cv2
-from PyQt5.QtGui import QColor
 
 color = {
-    "white": QColor(239, 239, 239),
-    "orange": QColor(239, 124, 28),
-    "magenta": QColor(216, 84, 205),
-    "light_blue": QColor(68, 194, 236),
-    "yellow": QColor(239, 232, 66),
-    "lime": QColor(138, 214, 33),
-    "pink": QColor(241, 134, 164),
-    "gray": QColor(69, 77, 80),
-    "light_gray": QColor(169, 169, 169),
-    "cyan": QColor(24, 169, 169),
-    "purple": QColor(147, 54, 198),
-    "blue": QColor(65, 74, 184),
-    "brown": QColor(142, 91,54),
-    "green": QColor(101, 134, 24),
-    "red": QColor(191, 50, 40),
-    "black": QColor(30, 30, 30)
+    "white": [239, 239, 239],
+    "orange": [239, 124, 28],
+    "magenta": [216, 84, 205],
+    "light_blue": [68, 194, 236],
+    "yellow": [239, 232, 66],
+    "lime": [138, 214, 33],
+    "pink": [241, 134, 164],
+    "gray": [69, 77, 80],
+    "light_gray": [169, 169, 169],
+    "cyan": [24, 169, 169],
+    "purple": [147, 54, 198],
+    "blue": [65, 74, 184],
+    "brown": [142, 91,54],
+    "green": [101, 134, 24],
+    "red": [191, 50, 40],
+    "black": [30, 30, 30]
 }
+
+color_name = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"]
 
 type = [
     "no", "bl", "br", "tl", "tr", "bs", "ts",

@@ -35,7 +35,7 @@ class BannerDisplayer(QWidget):
         grid_x = self.width() // 20
 
         for index in range(len(self.patterns_data)):
-            r, g, b, a = pattern.color[self.patterns_data[index][0]].getRgb()
+            r, g, b, a = QColor(*pattern.color[self.patterns_data[index][0]]).getRgb()
             style_index = self.patterns_data[index][1]
 
             for y in range(40):
@@ -124,7 +124,7 @@ class SingleBannerDesigner(QWidget):
     def BannerDisplay(self):
         self.PatternChanged.emit()
         # 设置背景颜色
-        bg_color = pattern.color[self.ui.BannerColorComboBox.currentText()]
+        bg_color = QColor(*pattern.color[self.ui.BannerColorComboBox.currentText()])
         self.banner_displayer.setBackgroundColor(bg_color)
         
         # 设置图案
@@ -147,6 +147,7 @@ class SingleBannerDesigner(QWidget):
         for i in range(6):
             self.ui.PatternVLayout.itemAt(i).widget().button_group.button(int(splited[2*i+1])).setChecked(True)
             self.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.setCurrentIndex(int(splited[2*i+2]))
+        self.BannerDisplay()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,7 +1,11 @@
-from PyQt5.QtWidgets import (QApplication, QLabel, QWidget, QGridLayout, QSizePolicy, QPushButton, QFileDialog)
+import PIL.Image
+import PIL.ImageDraw
+import PIL.ImageTk
+from PyQt5.QtWidgets import (QApplication, QLabel, QWidget, QGridLayout, QSizePolicy, QPushButton, QFileDialog, QVBoxLayout)
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QColor
-import sys, os
+from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage
+import sys, os, tkinter
+import PIL
 
 import SingleBannerDesigner
 import ui_banner_designer
@@ -18,6 +22,8 @@ class BannerDesigner(QWidget):
         self.current_design_name = ""
         self.current_banner = [0, 0]
         self.current_banner_pattern = {}
+
+        self.displaywindow = None
 
         self.single_designer = SingleBannerDesigner.SingleBannerDesigner()
         self.single_designer.setGeometry(0, 100, 800, 600)
@@ -51,6 +57,7 @@ class BannerDesigner(QWidget):
         self.ui.SaveFileButton.clicked.connect(self.SaveFile)
         self.ui.DesignSelectComboBox.currentIndexChanged.connect(lambda: self.LoadDesign(self.ui.DesignSelectComboBox.currentText()))
         self.ui.NewDesignButton.clicked.connect(self.NewDesign)
+        self.ui.DisplayButton.clicked.connect(self.DisplayDesign)
 
     def UpdateGridButton(self):
         while self.ui.GridLayout.count():
@@ -147,16 +154,14 @@ class BannerDesigner(QWidget):
         if self.filepath == "":
             self.filepath, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         # 打开文件
-        with open(self.filepath, "w") as f:
-            for name in self.designs:
-                design = self.designs[name]
-                design_str = f"{name},{design[0]},{design[1]},"
-                for banner in design[2]:
-                    design_str = design_str + banner + ","
-                print(design_str)
-                # f.writelines(design_str[:-1])
-                f.write(f"{design_str[:-1]}\n")
-
+        if self.filepath != "":
+            with open(self.filepath, "w") as f:
+                for name in self.designs:
+                    design = self.designs[name]
+                    design_str = f"{name},{design[0]},{design[1]},"
+                    for banner in design[2]:
+                        design_str = design_str + banner + ","
+                    f.write(f"{design_str[:-1]}\n")
 
     def LoadDesign(self, name: str):
         if name != "" and name in self.designs and self.current_banner_pattern != {}:
@@ -192,6 +197,54 @@ class BannerDesigner(QWidget):
         else:
             self.ui.NewDesignTextEdit.setPlainText("设计名不能为空")
 
+    def DisplayDesign(self):
+        if hasattr(self, 'display_window') and self.display_window:
+            self.display_window.close()
+        
+        grid_size = 100
+        width = grid_size * int(self.ui.RowSpinBox.value())
+        height = grid_size * int(self.ui.ColumnSpinBox.value())
+        
+        # 创建绘制窗口
+        self.display_window = QWidget()
+        self.display_window.setWindowTitle("设计预览")
+        self.display_window.setFixedSize(width, height)
+        
+        # 重写 paintEvent
+        def paintEvent(event):
+            painter = QPainter(self.display_window)
+            painter.fillRect(0, 0, width, height, QColor(255, 255, 255))
+            
+            rows = self.ui.RowSpinBox.value()
+            columns = self.ui.ColumnSpinBox.value()
+            
+            for row in range(1, rows):
+                for column in range(columns):
+                    y_offset = grid_size * (rows - row - 1)
+                    x_offset = grid_size * column
+                    
+                    pattern_key = f"{row}:{column}"
+                    if pattern_key in self.current_banner_pattern:
+                        p = self.current_banner_pattern[pattern_key].split(":")
+                        
+                        # 绘制背景矩形
+                        bg_color = QColor(*pattern.color[pattern.color_name[int(p[0])]])
+                        painter.fillRect(x_offset, y_offset, grid_size, 2 * grid_size, bg_color)
+                        
+                        # 绘制图案
+                        for i in range(6):
+                            color_idx = int(p[2 * i + 2])
+                            pattern_idx = int(p[2 * i + 1])
+                            
+                            icon = pattern.getIcon(pattern.type[pattern_idx])
+                            
+                            for y in range(40):
+                                for x in range(20):
+                                    pattern_color = QColor(*pattern.color[pattern.color_name[color_idx]] + [icon[y,x]])
+                                    painter.fillRect(x_offset + x * 5, y_offset + y * 5, 5, 5, pattern_color)
+        
+        self.display_window.paintEvent = paintEvent
+        self.display_window.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
