@@ -78,11 +78,14 @@ class Ui_BannerDesigner(object):
         self.SaveFileButton.setGeometry(QtCore.QRect(760, 10, 100, 40))
         self.SaveFileButton.setObjectName("SaveFileButton")
         self.CommandButton = QtWidgets.QPushButton(BannerDesigner)
-        self.CommandButton.setGeometry(QtCore.QRect(1020, 60, 100, 40))
+        self.CommandButton.setGeometry(QtCore.QRect(940, 60, 100, 40))
         self.CommandButton.setObjectName("CommandButton")
         self.DisplayButton = QtWidgets.QPushButton(BannerDesigner)
-        self.DisplayButton.setGeometry(QtCore.QRect(1020, 10, 100, 40))
+        self.DisplayButton.setGeometry(QtCore.QRect(940, 10, 100, 40))
         self.DisplayButton.setObjectName("DisplayButton")
+        self.RealMarginCheckBox = QtWidgets.QCheckBox(BannerDesigner)
+        self.RealMarginCheckBox.setGeometry(QtCore.QRect(1060, 10, 101, 40))
+        self.RealMarginCheckBox.setObjectName("RealMarginCheckBox")
 
         self.retranslateUi(BannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(BannerDesigner)
@@ -101,6 +104,7 @@ class Ui_BannerDesigner(object):
         self.SaveFileButton.setText(_translate("BannerDesigner", "保存文件"))
         self.CommandButton.setText(_translate("BannerDesigner", "生成指令"))
         self.DisplayButton.setText(_translate("BannerDesigner", "预览效果"))
+        self.RealMarginCheckBox.setText(_translate("BannerDesigner", "真实间距"))
 
 
 if __name__ == "__main__":

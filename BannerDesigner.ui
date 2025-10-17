@@ -230,7 +230,7 @@
   <widget class="QPushButton" name="CommandButton">
    <property name="geometry">
     <rect>
-     <x>1020</x>
+     <x>940</x>
      <y>60</y>
      <width>100</width>
      <height>40</height>
@@ -243,7 +243,7 @@
   <widget class="QPushButton" name="DisplayButton">
    <property name="geometry">
     <rect>
-     <x>1020</x>
+     <x>940</x>
      <y>10</y>
      <width>100</width>
      <height>40</height>
@@ -251,6 +251,19 @@
    </property>
    <property name="text">
     <string>预览效果</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="RealMarginCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>1060</x>
+     <y>10</y>
+     <width>101</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>真实间距</string>
    </property>
   </widget>
  </widget>

@@ -202,8 +202,16 @@ class BannerDesigner(QWidget):
             self.display_window.close()
         
         grid_size = 100
-        width = grid_size * int(self.ui.RowSpinBox.value())
-        height = grid_size * int(self.ui.ColumnSpinBox.value())
+        if self.ui.RealMarginCheckBox.isChecked():
+            # 旗帜边界到方块边界的距离
+            extra_offset_x = 2 * grid_size // 20
+            extra_offset_y = 4 * grid_size // 20
+        else:
+            extra_offset_x = 0
+            extra_offset_y = 0
+            
+        width = (grid_size + 2 * extra_offset_x) * int(self.ui.RowSpinBox.value())
+        height = (grid_size + extra_offset_y) * int(self.ui.ColumnSpinBox.value())
         
         # 创建绘制窗口
         self.display_window = QWidget()
@@ -220,8 +228,8 @@ class BannerDesigner(QWidget):
             
             for row in range(1, rows):
                 for column in range(columns):
-                    y_offset = grid_size * (rows - row - 1)
-                    x_offset = grid_size * column
+                    y_offset = (grid_size + extra_offset_y) * (rows - row - 1)
+                    x_offset = (grid_size + extra_offset_x) * column + extra_offset_x // 2
                     
                     pattern_key = f"{row}:{column}"
                     if pattern_key in self.current_banner_pattern:
