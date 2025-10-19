@@ -15,6 +15,7 @@ class Ui_BannerDesigner(object):
     def setupUi(self, BannerDesigner):
         BannerDesigner.setObjectName("BannerDesigner")
         BannerDesigner.resize(1200, 700)
+        BannerDesigner.setStyleSheet("QGroupBox { font-weight: bold;}")
         self.scrollArea = QtWidgets.QScrollArea(BannerDesigner)
         self.scrollArea.setGeometry(QtCore.QRect(825, 200, 350, 450))
         self.scrollArea.setWidgetResizable(True)
@@ -86,6 +87,9 @@ class Ui_BannerDesigner(object):
         self.RealMarginCheckBox = QtWidgets.QCheckBox(BannerDesigner)
         self.RealMarginCheckBox.setGeometry(QtCore.QRect(1060, 10, 101, 40))
         self.RealMarginCheckBox.setObjectName("RealMarginCheckBox")
+        self.InfoButton = QtWidgets.QPushButton(BannerDesigner)
+        self.InfoButton.setGeometry(QtCore.QRect(1070, 60, 100, 40))
+        self.InfoButton.setObjectName("InfoButton")
 
         self.retranslateUi(BannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(BannerDesigner)
@@ -93,18 +97,18 @@ class Ui_BannerDesigner(object):
     def retranslateUi(self, BannerDesigner):
         _translate = QtCore.QCoreApplication.translate
         BannerDesigner.setWindowTitle(_translate("BannerDesigner", "BannerDesigner"))
-        BannerDesigner.setStyleSheet(_translate("BannerDesigner", "QGroupBox { font-weight: bold; }"))
         self.RowLabel.setText(_translate("BannerDesigner", "行数"))
         self.ColumnLabel.setText(_translate("BannerDesigner", "列数"))
         self.FilepathTxtLabel.setText(_translate("BannerDesigner", "文件路径："))
         self.OpenFileButton.setText(_translate("BannerDesigner", "打开文件"))
         self.DesignSelectLabel.setText(_translate("BannerDesigner", "当前设计："))
-        self.NewDesignLabel.setText(_translate("BannerDesigner", "新建设计："))
-        self.NewDesignButton.setText(_translate("BannerDesigner", "添加"))
+        self.NewDesignLabel.setText(_translate("BannerDesigner", "输入名称："))
+        self.NewDesignButton.setText(_translate("BannerDesigner", "查找/新建"))
         self.SaveFileButton.setText(_translate("BannerDesigner", "保存文件"))
         self.CommandButton.setText(_translate("BannerDesigner", "生成指令"))
         self.DisplayButton.setText(_translate("BannerDesigner", "预览效果"))
         self.RealMarginCheckBox.setText(_translate("BannerDesigner", "真实间距"))
+        self.InfoButton.setText(_translate("BannerDesigner", "快捷键提示"))
 
 
 if __name__ == "__main__":

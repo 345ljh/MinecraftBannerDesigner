@@ -14,7 +14,7 @@
    <string>BannerDesigner</string>
   </property>
   <property name="styleSheet">
-   <string>QGroupBox { font-weight: bold; }</string>
+   <string notr="true">QGroupBox { font-weight: bold;}</string>
   </property>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
@@ -183,7 +183,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>新建设计：</string>
+    <string>输入名称：</string>
    </property>
   </widget>
   <widget class="QPlainTextEdit" name="NewDesignTextEdit">
@@ -211,7 +211,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>添加</string>
+    <string>查找/新建</string>
    </property>
   </widget>
   <widget class="QPushButton" name="SaveFileButton">
@@ -264,6 +264,19 @@
    </property>
    <property name="text">
     <string>真实间距</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="InfoButton">
+   <property name="geometry">
+    <rect>
+     <x>1070</x>
+     <y>60</y>
+     <width>100</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>快捷键提示</string>
    </property>
   </widget>
  </widget>

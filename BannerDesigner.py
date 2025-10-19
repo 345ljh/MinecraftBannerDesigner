@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QSizePolicy, QPushButton, QFileDialog)
+from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, 
+QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence
 import sys, os
@@ -59,6 +60,15 @@ class BannerDesigner(QWidget):
         self.ui.CommandButton.clicked.connect(self.GenerateCommand)
         self.single_designer.ui.CopyBannerButton.clicked.connect(self.CopyBanner)
         self.single_designer.ui.PasteBannerButton.clicked.connect(self.PasteBanner)
+        self.ui.InfoButton.clicked.connect(lambda: QMessageBox.information(self, '提示', '''快捷键：
+Ctrl+C 复制旗帜
+Ctrl+V 粘贴旗帜
+Ctrl+S 保存旗帜
+Ctrl+Shift+N 根据名称查找/新建设计
+Ctrl+Shift+O 打开.banner文件
+Ctrl+Shift+S 保存.banner文件
+Ctrl+Shift+Q 生成MineCraft指令
+        '''))
 
         # 快捷键
         # 单面旗帜操作
@@ -314,7 +324,14 @@ class BannerDesigner(QWidget):
                     '''
 
                 generated_num += 1
-        print(command)
+        # 复制剪贴板
+        app = QApplication.instance()
+        if not app:
+            app = QApplication(sys.argv)
+        
+        clipboard = app.clipboard()
+        clipboard.setText(command)
+        QMessageBox.information(self, '生成成功！', f'已复制指令到剪贴板，共{(generated_num - 1) // 27 + 1}条')
 
 
 if __name__ == '__main__':
