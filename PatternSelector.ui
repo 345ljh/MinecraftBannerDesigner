@@ -73,16 +73,16 @@
       <height>89</height>
      </rect>
     </property>
-    <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <widget class="QWidget" name="gridLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>-11</x>
-       <y>-11</y>
-       <width>481</width>
-       <height>101</height>
+       <x>-1</x>
+       <y>-1</y>
+       <width>411</width>
+       <height>91</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="PatternStyleHLayout"/>
+     <layout class="QGridLayout" name="PatternStyleGLayout"/>
     </widget>
    </widget>
   </widget>

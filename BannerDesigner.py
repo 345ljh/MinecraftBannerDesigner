@@ -324,6 +324,12 @@ Ctrl+Shift+Q 生成MineCraft指令
                     '''
 
                 generated_num += 1
+        
+        if generated_num % 27 != 0:
+            # 指令后缀
+            command += f''']}}}}
+            ___________________________
+            '''
         # 复制剪贴板
         app = QApplication.instance()
         if not app:

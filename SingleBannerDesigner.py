@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (QApplication, QLabel, QWidget, QVBoxLayout, QSizePolicy)
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QColor
+from PyQt5.QtGui import QPainter, QPen, QColor, QStandardItemModel, QStandardItem
 import sys
 
 import ui_single_banner_designer
@@ -62,9 +62,17 @@ class SingleBannerDesigner(QWidget):
         # 替换原有的 BannerPainter 为自定义控件
         self.replaceBannerPainter()
 
-        # 底色选项
+        model = QStandardItemModel()
         for key in pattern.color:
-            self.ui.BannerColorComboBox.addItem(key)
+            # self.ui.BannerColorComboBox.addItem(key)
+            item = QStandardItem(key)
+            item.setBackground(QColor(*pattern.color[key]))
+            gray = int((pattern.color[key][0] + pattern.color[key][1] + pattern.color[key][2]) / 3)
+            item.setForeground(gray >= 128 and QColor(0, 0, 0) or QColor(255, 255, 255))
+            model.appendRow(item)
+
+        # 底色选项
+        self.ui.BannerColorComboBox.setModel(model)
 
         # 图案选项
         while self.ui.PatternVLayout.count():
@@ -86,6 +94,7 @@ class SingleBannerDesigner(QWidget):
             w = PatternSelector.PatternSelector(i)
             w.patternChanged.connect(self.BannerDisplay)
             self.ui.PatternVLayout.addWidget(w)
+
 
         self.ui.BannerColorComboBox.currentIndexChanged.connect(self.BannerDisplay)
         
