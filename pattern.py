@@ -22,13 +22,23 @@ color = {
 color_name = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"]
 
 type = [
-    "no", "bl", "br", "tl", "tr", "bs", "ts",
-    "ls", "rs", "cs", "ms", "drs", "dls",
-    "ss", "cr", "sc", "bt", "tt", "bts",
-    "tts", "ld", "rd", "lud", "rud", "mc",
-    "mr", "vh", "hh", "vhr", "hhb", "bo",
-    "cbo", "gra", "gru", "bri",
-    "flo", "cre", "sku", "moj", "glb", "pig"
+    "no", "bl", "br", "tl", "tr", "bs", 
+    "ts", "ls", "rs", "cs", "ms", "drs", 
+    "dls", "ss", "cr", "sc", "bt", "tt", 
+    "bts", "tts", "ld", "rud", "lud", "rd", 
+    "mc", "mr", "vh", "hh", "vhr", "hhb", 
+    "bo", "cbo", "gra", "gru", "bri", "flo", 
+    "cre", "sku", "moj", "glb", "pig"
+]
+
+symmetric_pair = [
+0, 2, 1, 4, 3, 5, 
+6, 8, 7, 9, 19, 12, 
+11, 13, 14, 15, 16, 17, 
+18, 19, 23, 22, 21, 20, 
+24, 25, 28, 27, 26, 29, 
+30, 31, 32, 33, 34, 35, 
+36, 37, 38, 39, 40
 ]
 
 icon = {}

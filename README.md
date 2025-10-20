@@ -1,1 +1,1 @@
-/portable：打包后的项目，BannerDesigner.exe无需配置环境可直接执行  
+/portable：打包后的项目，BannerDesigner.exe无需配置环境可直接执行(版本可能落后于代码)  

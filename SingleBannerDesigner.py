@@ -71,6 +71,11 @@ class SingleBannerDesigner(QWidget):
             item.setForeground(gray >= 128 and QColor(0, 0, 0) or QColor(255, 255, 255))
             model.appendRow(item)
 
+        item = QStandardItem("no banner")
+        item.setBackground(QColor(230, 230, 230))
+        item.setForeground(QColor(0, 0, 0))
+        model.appendRow(item)
+
         # 底色选项
         self.ui.BannerColorComboBox.setModel(model)
 
@@ -132,19 +137,23 @@ class SingleBannerDesigner(QWidget):
 
     def BannerDisplay(self):
         self.PatternChanged.emit()
-        # 设置背景颜色
-        bg_color = QColor(*pattern.color[self.ui.BannerColorComboBox.currentText()])
-        self.banner_displayer.setBackgroundColor(bg_color)
-        
-        # 设置图案
-        patterns_data = []
-        for pattern_index in range(6):
-            patterns_data.append([
-                self.ui.PatternVLayout.itemAt(pattern_index).widget().ui.PatternColorComboBox.currentText(),  # color_text
-                self.ui.PatternVLayout.itemAt(pattern_index).widget().button_group.checkedId()  # type_index
-            ])
+        if self.ui.BannerColorComboBox.currentIndex() != 16:
+            # 设置背景颜色
+            bg_color = QColor(*pattern.color[self.ui.BannerColorComboBox.currentText()])
+            self.banner_displayer.setBackgroundColor(bg_color)
+            
+            # 设置图案
+            patterns_data = []
+            for pattern_index in range(6):
+                patterns_data.append([
+                    self.ui.PatternVLayout.itemAt(pattern_index).widget().ui.PatternColorComboBox.currentText(),  # color_text
+                    self.ui.PatternVLayout.itemAt(pattern_index).widget().button_group.checkedId()  # type_index
+                ])
 
-        self.banner_displayer.setPatternsData(patterns_data)
+            self.banner_displayer.setPatternsData(patterns_data)
+        else:
+            # 空旗帜
+            self.banner_displayer.setBackgroundColor(QColor(230, 230, 230))
 
     def LoadPattern(self, str):
         # 单旗帜表示,长度13

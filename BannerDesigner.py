@@ -64,6 +64,8 @@ class BannerDesigner(QWidget):
 Ctrl+C 复制旗帜
 Ctrl+V 粘贴旗帜
 Ctrl+S 保存旗帜
+Ctrl+D 快速对称
+Ctrl+1/2/3/4/5/6/7/8/9/0/Q/W/E/R/T/Y/del 设置旗帜背景颜色
 Ctrl+Shift+N 根据名称查找/新建设计
 Ctrl+Shift+O 打开.banner文件
 Ctrl+Shift+S 保存.banner文件
@@ -78,6 +80,13 @@ Ctrl+Shift+Q 生成MineCraft指令
         self.shortcut_paste.activated.connect(self.PasteBanner)
         self.shortcut_save = QShortcut(QKeySequence("Ctrl+S"), self)
         self.shortcut_save.activated.connect(self.SaveBanner)
+        self.shortcut_symm = QShortcut(QKeySequence("Ctrl+D"), self)
+        self.shortcut_symm.activated.connect(self.SymmetricBanner)
+        # 快速设置背景
+        self.shortcut_background = [QShortcut(QKeySequence(f"Ctrl+{key}"), self) for key in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Q', 'W', 'E', 'R', 'T', 'Y', 'del']]
+        for i, shortcut in enumerate(self.shortcut_background):
+            shortcut.activated.connect(lambda idx=i: self.single_designer.ui.BannerColorComboBox.setCurrentIndex(idx))
+
         # 设计层面操作
         self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+Shift+N"), self)
         self.shortcut_new_design.activated.connect(self.NewDesign)
@@ -104,7 +113,7 @@ Ctrl+Shift+Q 生成MineCraft指令
                 self.ui.GridLayout.addWidget(button, i, j)
                 button.clicked.connect(lambda checked, i=i, j=j: self.GridButtonClicked(i, j))
                 if(f"{_i}:{j}" not in self.current_banner_pattern):
-                    self.current_banner_pattern[f"{_i}:{j}"] = "0:0:0:0:0:0:0:0:0:0:0:0:0"
+                    self.current_banner_pattern[f"{_i}:{j}"] = "16:0:0:0:0:0:0:0:0:0:0:0:0"
 
         self.GridButtonClicked(self.ui.RowSpinBox.value() - 2, 0)
 
@@ -118,6 +127,19 @@ Ctrl+Shift+Q 生成MineCraft指令
 
         _i = self.ui.RowSpinBox.value() - i - 1
         self.single_designer.LoadPattern(self.current_banner_pattern[f"{_i}:{j}"])
+
+    def SymmetricBanner(self):  # 水平对称对称旗帜
+        banner = []
+        banner.append(str(self.single_designer.ui.BannerColorComboBox.currentIndex()))
+        for i in range(6):
+            banner.append(str(pattern.symmetric_pair[self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()]))
+            banner.append(str(self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()))
+        new_banner = ""
+        for i in range(13):
+            new_banner += banner[i] + ":"
+        self.single_designer.LoadPattern(new_banner)
+            
+
 
     def SaveBanner(self):  # 暂存旗帜
         self.ui.GridLayout.itemAtPosition(self.current_banner[0], self.current_banner[1]).widget().setStyleSheet("background-color: rgb(128, 255, 128)")
@@ -142,41 +164,43 @@ Ctrl+Shift+Q 生成MineCraft指令
             self.ui.FilePathLabel.setText(path)
             if os.path.exists(path):
                 self.ui.DesignSelectComboBox.clear()
-                # 按照csv格式解析
-                # 名称,行数,列数,旗帜0,旗帜1,...
-                with open(path, "r") as f:
-                    for line in f.readlines():
-                        try:
-                            line = line.strip().split(",")
-                            if(line.__len__() < 3):  # 检验必要部分
-                                raise Exception("缺少关键信息")
-                            for banner in line[3:]:  # 依次检验旗帜部分是否符合格式
-                                if banner == '':
-                                    continue
-                                elems = banner.split(":")
-                                if(elems.__len__() < 15):  # 检验长度, 其中[0:2]为坐标,[2:15]为颜色与图案
-                                    raise Exception("长度错误")
-                                for elem_index, elem in enumerate(elems):  # 图案0~40, 颜色0~15
-                                    if elem_index >= 2:
-                                        if elem_index % 2 == 0:
-                                            if int(elem) < 0 or int(elem) > 15:  # 不能转换int会报错
-                                                raise Exception("颜色值错误")
+                # 使用UTF-8编码打开
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        for line in f.readlines():
+                            try:
+                                line = line.strip().split(",")
+                                if len(line) < 3:  # 检验必要部分
+                                    raise Exception("缺少关键信息")
+                                for banner in line[3:]:  # 依次检验旗帜部分是否符合格式
+                                    if banner == '':
+                                        continue
+                                    elems = banner.split(":")
+                                    if len(elems) < 15:  # 检验长度, 其中[0:2]为坐标,[2:15]为颜色与图案
+                                        raise Exception("长度错误")
+                                    for elem_index, elem in enumerate(elems):  # 图案0~40, 颜色0~15
+                                        if elem_index >= 2:
+                                            if elem_index % 2 == 0:
+                                                if int(elem) < 0 or int(elem) > 15 + (elem_index == 2):  # 不能转换int会报错
+                                                    raise Exception("颜色值错误")
+                                            else:
+                                                if int(elem) < 0 or int(elem) > 40:
+                                                    raise Exception("图案值错误")
                                         else:
-                                            if int(elem) < 0 or int(elem) > 40:
-                                                raise Exception("图案值错误")
-                                    else:
-                                        if int(elem) < 0:
-                                            raise Exception("坐标不能为负数")
-                        except Exception as e:
-                            print(e)
-                            continue
-                        # 存储
-                        self.designs[line[0]] = [line[1], line[2], line[3:]]
-                        self.ui.DesignSelectComboBox.addItem(line[0])
-                    # 加载第一个
-                    if self.designs != {}:
-                        self.ui.DesignSelectComboBox.setCurrentIndex(0)
-                        self.LoadDesign(self.ui.DesignSelectComboBox.itemText(0))
+                                            if int(elem) < 0:
+                                                raise Exception("坐标不能为负数")
+                            except Exception as e:
+                                print(e)
+                                continue
+                            # 存储
+                            self.designs[line[0]] = [line[1], line[2], line[3:]]
+                            self.ui.DesignSelectComboBox.addItem(line[0])
+                        # 加载第一个
+                        if self.designs != {}:
+                            self.ui.DesignSelectComboBox.setCurrentIndex(0)
+                            self.LoadDesign(self.ui.DesignSelectComboBox.itemText(0))
+                except UnicodeDecodeError:
+                    QMessageBox.warning(self, "错误", "文件编码不支持")
 
     def SaveFile(self):
         # 检查路径是否为空
@@ -184,7 +208,8 @@ Ctrl+Shift+Q 生成MineCraft指令
             self.filepath, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         # 打开文件
         if self.filepath != "":
-            with open(self.filepath, "w") as f:
+            # 使用UTF-8编码保存
+            with open(self.filepath, "w", encoding="utf-8") as f:
                 for name in self.designs:
                     design = self.designs[name]
                     design_str = f"{name},{design[0]},{design[1]},"
@@ -219,7 +244,7 @@ Ctrl+Shift+Q 生成MineCraft指令
                 self.ui.NewDesignTextEdit.setPlainText("无效的名称")
                 return
             if not self.LoadDesign(name):
-                self.designs[name] = ['2', '2', ['1:0:0:0:0:0:0:0:0:0:0:0:0:0:0', '1:1:0:0:0:0:0:0:0:0:0:0:0:0:0', '']]  # 初始化设计
+                self.designs[name] = ['2', '2', ['1:0:16:0:0:0:0:0:0:0:0:0:0:0:0', '1:1:16:0:0:0:0:0:0:0:0:0:0:0:0', '']]  # 初始化设计
             self.ui.NewDesignTextEdit.setPlainText("")
             self.ui.DesignSelectComboBox.addItem(name)
             self.ui.DesignSelectComboBox.setCurrentText(name)
@@ -262,7 +287,10 @@ Ctrl+Shift+Q 生成MineCraft指令
                     
                     pattern_key = f"{row}:{column}"
                     if pattern_key in self.current_banner_pattern:
-                        p = self.current_banner_pattern[pattern_key].split(":")
+
+                        p = self.current_banner_pattern[pattern_key].split(":")           
+                        if p[0] == "16":
+                            continue
                         
                         # 绘制背景矩形
                         bg_color = QColor(*pattern.color[pattern.color_name[int(p[0])]])
@@ -297,33 +325,35 @@ Ctrl+Shift+Q 生成MineCraft指令
         for i in range(self.ui.RowSpinBox.value() - 1):
             _i = self.ui.RowSpinBox.value() - i - 1
             for j in range(self.ui.ColumnSpinBox.value()):
-                if generated_num % 27 == 0:
-                    # 指令前缀, 缩进似乎会影响指令执行, 因此不缩进不换行
-                    command += f'''/give @p minecraft:chest{{display: {{Name: '{{"text":"{self.current_design_name}","color":"gold"}}'}},BlockEntityTag:{{Items:['''
-
                 # 旗帜属性    
                 now_banner = self.current_banner_pattern[f"{_i}:{j}"].split(":")
-                command += f'''{{Slot:{generated_num % 27}b,id:"minecraft:{pattern.color_name[int(now_banner[0])]}_banner",Count:1b,tag:{{display: {{Name: '{{"text":"{_i}_{j}"}}'}},'''
 
-                # 判断是否需要添加图案, 即[1:2:13]是否全为'0
-                if now_banner[1::2] != ['0', '0', '0', '0', '0', '0']:
+                if now_banner[0] != "16":
+                    if generated_num % 27 == 0:
+                        # 指令前缀, 缩进似乎会影响指令执行, 因此不缩进不换行
+                        command += f'''/give @p minecraft:chest{{display: {{Name: '{{"text":"{self.current_design_name}","color":"gold"}}'}},BlockEntityTag:{{Items:['''
 
-                    command += f'''BlockEntityTag:{{Patterns:['''
+                    command += f'''{{Slot:{generated_num % 27}b,id:"minecraft:{pattern.color_name[int(now_banner[0])]}_banner",Count:1b,tag:{{display: {{Name: '{{"text":"{_i}_{j}"}}'}},'''
 
-                    for k in range(6):
-                        if int(now_banner[2 * k + 1]) != 0:
-                            command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
-                    command += f"]}}"
+                    # 判断是否需要添加图案, 即[1:2:13]是否全为'0
+                    if now_banner[1::2] != ['0', '0', '0', '0', '0', '0']:
 
-                command += f'''}}}},'''
+                        command += f'''BlockEntityTag:{{Patterns:['''
 
-                if generated_num % 27 == 26 or generated_num == len(self.current_banner_pattern) - 1:
-                    # 指令后缀
-                    command += f''']}}}}
-                    ___________________________
-                    '''
+                        for k in range(6):
+                            if int(now_banner[2 * k + 1]) != 0:
+                                command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
+                        command += f"]}}"
 
-                generated_num += 1
+                    command += f'''}}}},'''
+
+                    if generated_num % 27 == 26:
+                        # 指令后缀
+                        command += f''']}}}}
+                        ___________________________
+                        '''
+
+                    generated_num += 1
         
         if generated_num % 27 != 0:
             # 指令后缀
