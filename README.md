@@ -1,0 +1,1 @@
+/portable：打包后的项目，BannerDesigner.exe无需配置环境可直接执行  
