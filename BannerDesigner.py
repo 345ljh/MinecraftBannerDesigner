@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, 
+from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence
@@ -264,18 +264,41 @@ Ctrl+Shift+Q 生成MineCraft指令
             extra_offset_x = 0
             extra_offset_y = 0
             
-        width = (grid_size + 2 * extra_offset_x) * int(self.ui.RowSpinBox.value())
-        height = (grid_size + extra_offset_y) * int(self.ui.ColumnSpinBox.value())
+        width = (grid_size + 2 * extra_offset_x) * int(self.ui.ColumnSpinBox.value())
+        height = (grid_size + extra_offset_y) * int(self.ui.RowSpinBox.value())
         
         # 创建绘制窗口
         self.display_window = QWidget()
         self.display_window.setWindowTitle("设计预览")
-        self.display_window.setFixedSize(width, height)
+        
+        # 计算缩放比例
+        max_width = 1600
+        max_height = 1000
+        scale_factor = 1.0
+        
+        if width > max_width or height > max_height:
+            width_scale = max_width / width
+            height_scale = max_height / height
+            scale_factor = min(width_scale, height_scale)
+            
+            # 设置缩放后的窗口大小
+            scaled_width = int(width * scale_factor)
+            scaled_height = int(height * scale_factor)
+            self.display_window.setFixedSize(scaled_width, scaled_height)
+        else:
+            self.display_window.setFixedSize(width, height)
         
         # 重写 paintEvent
         def paintEvent(event):
             painter = QPainter(self.display_window)
-            painter.fillRect(0, 0, width, height, QColor(255, 255, 255))
+            painter.setRenderHint(QPainter.Antialiasing)  # 抗锯齿
+            
+            # 填充白色背景
+            painter.fillRect(0, 0, self.display_window.width(), self.display_window.height(), QColor(255, 255, 255))
+            
+            # 如果需要缩放，应用变换矩阵
+            if scale_factor < 1.0:
+                painter.scale(scale_factor, scale_factor)
             
             rows = self.ui.RowSpinBox.value()
             columns = self.ui.ColumnSpinBox.value()

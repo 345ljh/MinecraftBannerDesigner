@@ -154,6 +154,7 @@ class SingleBannerDesigner(QWidget):
         else:
             # 空旗帜
             self.banner_displayer.setBackgroundColor(QColor(230, 230, 230))
+            self.banner_displayer.setPatternsData([])
 
     def LoadPattern(self, str):
         # 单旗帜表示,长度13
