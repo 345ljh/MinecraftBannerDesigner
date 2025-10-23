@@ -86,6 +86,7 @@ class Ui_BannerDesigner(object):
         self.DisplayButton.setObjectName("DisplayButton")
         self.RealMarginCheckBox = QtWidgets.QCheckBox(BannerDesigner)
         self.RealMarginCheckBox.setGeometry(QtCore.QRect(1060, 10, 101, 40))
+        self.RealMarginCheckBox.setChecked(True)
         self.RealMarginCheckBox.setObjectName("RealMarginCheckBox")
         self.InfoButton = QtWidgets.QPushButton(BannerDesigner)
         self.InfoButton.setGeometry(QtCore.QRect(1070, 60, 100, 40))
