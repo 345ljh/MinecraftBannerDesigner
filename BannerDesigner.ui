@@ -256,7 +256,7 @@
   <widget class="QCheckBox" name="RealMarginCheckBox">
    <property name="geometry">
     <rect>
-     <x>1060</x>
+     <x>1070</x>
      <y>10</y>
      <width>101</width>
      <height>40</height>
@@ -272,14 +272,27 @@
   <widget class="QPushButton" name="InfoButton">
    <property name="geometry">
     <rect>
-     <x>1070</x>
-     <y>60</y>
+     <x>1020</x>
+     <y>130</y>
      <width>100</width>
      <height>40</height>
     </rect>
    </property>
    <property name="text">
     <string>快捷键提示</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="CalculateButton">
+   <property name="geometry">
+    <rect>
+     <x>1060</x>
+     <y>60</y>
+     <width>100</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>染料计算</string>
    </property>
   </widget>
  </widget>

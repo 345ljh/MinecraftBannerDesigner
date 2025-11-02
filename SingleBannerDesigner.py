@@ -95,7 +95,7 @@ class SingleBannerDesigner(QWidget):
         self.ui.PatternVLayout.setAlignment(Qt.AlignTop)
         self.ui.PatternVLayout.setSpacing(5)
 
-        for i in range(6):
+        for i in range(pattern.MAX_BANNER):
             w = PatternSelector.PatternSelector(i)
             w.patternChanged.connect(self.BannerDisplay)
             self.ui.PatternVLayout.addWidget(w)
@@ -144,7 +144,7 @@ class SingleBannerDesigner(QWidget):
             
             # 设置图案
             patterns_data = []
-            for pattern_index in range(6):
+            for pattern_index in range(pattern.MAX_BANNER):
                 patterns_data.append([
                     self.ui.PatternVLayout.itemAt(pattern_index).widget().ui.PatternColorComboBox.currentText(),  # color_text
                     self.ui.PatternVLayout.itemAt(pattern_index).widget().button_group.checkedId()  # type_index
@@ -160,10 +160,10 @@ class SingleBannerDesigner(QWidget):
         # 单旗帜表示,长度13
         splited = str.split(':')
         # 补0
-        while len(splited) < 13:
+        while len(splited) < 2 * pattern.MAX_BANNER + 1:
             splited.append('0')
         self.ui.BannerColorComboBox.setCurrentIndex(int(splited[0]))
-        for i in range(6):
+        for i in range(pattern.MAX_BANNER):
             self.ui.PatternVLayout.itemAt(i).widget().button_group.button(int(splited[2*i+1])).setChecked(True)
             self.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.setCurrentIndex(int(splited[2*i+2]))
         self.BannerDisplay()

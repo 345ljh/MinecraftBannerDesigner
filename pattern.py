@@ -1,5 +1,7 @@
 import cv2
 
+MAX_BANNER = 6
+
 color = {
     "white": [239, 239, 239],
     "orange": [239, 124, 28],
@@ -25,7 +27,7 @@ type = [
     "no", "bl", "br", "tl", "tr", "bs", 
     "ts", "ls", "rs", "cs", "ms", "drs", 
     "dls", "ss", "cr", "sc", "bt", "tt", 
-    "bts", "tts", "ld", "rud", "lud", "rd", 
+    "bts", "tts", "ld", "rd", "lud", "rud", 
     "mc", "mr", "vh", "hh", "vhr", "hhb", 
     "bo", "cbo", "gra", "gru", "bri", "flo", 
     "cre", "sku", "moj", "glb", "pig"
@@ -46,7 +48,7 @@ icon = {}
 def getIcon(n = ""):
     if icon == {}:
         for name in type:
-            image = cv2.imread("icons/" + name + ".png", cv2.IMREAD_UNCHANGED)
+            image = cv2.imread("images/icons/" + name + ".png", cv2.IMREAD_UNCHANGED)
             # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)[1:21, 1:21]
             image = image[1:41, 1:21, 3]
             icon[name] = image
@@ -55,6 +57,12 @@ def getIcon(n = ""):
     else:
         return icon[n]
 
+def getDefaultBannerStr():
+    # 格式类似16:0:0:0:0:0:0:0:0:0:0:0:0
+    str = "16:"
+    for i in range(MAX_BANNER):
+        str += "0:0:"
+    return str[:-1]
 
 if __name__ == "__main__":
     named_window = cv2.namedWindow("aaa")

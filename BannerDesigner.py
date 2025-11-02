@@ -58,6 +58,7 @@ class BannerDesigner(QWidget):
         self.ui.NewDesignButton.clicked.connect(self.NewDesign)
         self.ui.DisplayButton.clicked.connect(self.DisplayDesign)
         self.ui.CommandButton.clicked.connect(self.GenerateCommand)
+        self.ui.CalculateButton.clicked.connect(self.CalculateDesignDye)
         self.single_designer.ui.CopyBannerButton.clicked.connect(self.CopyBanner)
         self.single_designer.ui.PasteBannerButton.clicked.connect(self.PasteBanner)
         self.ui.InfoButton.clicked.connect(lambda: QMessageBox.information(self, '提示', '''快捷键：
@@ -113,7 +114,7 @@ Ctrl+Shift+Q 生成MineCraft指令
                 self.ui.GridLayout.addWidget(button, i, j)
                 button.clicked.connect(lambda checked, i=i, j=j: self.GridButtonClicked(i, j))
                 if(f"{_i}:{j}" not in self.current_banner_pattern):
-                    self.current_banner_pattern[f"{_i}:{j}"] = "16:0:0:0:0:0:0:0:0:0:0:0:0"
+                    self.current_banner_pattern[f"{_i}:{j}"] = pattern.getDefaultBannerStr()
 
         self.GridButtonClicked(self.ui.RowSpinBox.value() - 2, 0)
 
@@ -131,12 +132,18 @@ Ctrl+Shift+Q 生成MineCraft指令
     def SymmetricBanner(self):  # 水平对称对称旗帜
         banner = []
         banner.append(str(self.single_designer.ui.BannerColorComboBox.currentIndex()))
-        for i in range(6):
-            banner.append(str(pattern.symmetric_pair[self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()]))
-            banner.append(str(self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()))
+        for i in range(pattern.MAX_BANNER):
+            try:
+                banner.append(str(pattern.symmetric_pair[self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()]))
+                banner.append(str(self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()))
+            except IndexError:
+                pass
         new_banner = ""
-        for i in range(13):
-            new_banner += banner[i] + ":"
+        for i in range(2 * pattern.MAX_BANNER + 1):
+            try:
+                new_banner += banner[i] + ":"
+            except IndexError:
+                pass
         self.single_designer.LoadPattern(new_banner)
             
 
@@ -144,18 +151,39 @@ Ctrl+Shift+Q 生成MineCraft指令
     def SaveBanner(self):  # 暂存旗帜
         self.ui.GridLayout.itemAtPosition(self.current_banner[0], self.current_banner[1]).widget().setStyleSheet("background-color: rgb(128, 255, 128)")
         s = f"{self.single_designer.ui.BannerColorComboBox.currentIndex()}:"
-        for i in range(6):
-            s += f"{self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()}:{self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()}:"
+        for i in range(pattern.MAX_BANNER):
+            try:
+                s += f"{self.single_designer.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId()}:{self.single_designer.ui.PatternVLayout.itemAt(i).widget().ui.PatternColorComboBox.currentIndex()}:"
+            except IndexError:
+                pass
         self.current_banner_pattern[f"{self.ui.RowSpinBox.value() - self.current_banner[0] - 1}:{self.current_banner[1]}"] = s[:-1]
         self.SaveDesign()
 
     def SaveDesign(self): 
         current_design_value = []
         for key in self.current_banner_pattern.keys():
-            current_design_value.append(str(key) + ":" + str(self.current_banner_pattern[key]))
+            # 解析当前旗帜图案
+            pattern_data = self.current_banner_pattern[key].split(":")
+            banner_color = pattern_data[0]
+            
+            # 过滤图案为0的部分
+            filtered_pattern = [banner_color]
+            for i in range(pattern.MAX_BANNER):
+                try:
+                    pattern_idx = int(pattern_data[2*i + 1])
+                    color_idx = int(pattern_data[2*i + 2])
+                    if pattern_idx != 0:  # 只保存图案不为0的部分
+                        filtered_pattern.append(str(pattern_idx))
+                        filtered_pattern.append(str(color_idx))
+                except (IndexError, ValueError):
+                    break
+            
+            # 重新组合为字符串
+            filtered_pattern_str = ":".join(filtered_pattern)
+            current_design_value.append(str(key) + ":" + filtered_pattern_str)
 
         self.designs[self.current_design_name] = [str(self.ui.RowSpinBox.value()), str(self.ui.ColumnSpinBox.value()), current_design_value]
-
+        
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         if path:
@@ -176,19 +204,21 @@ Ctrl+Shift+Q 生成MineCraft指令
                                     if banner == '':
                                         continue
                                     elems = banner.split(":")
-                                    if len(elems) < 15:  # 检验长度, 其中[0:2]为坐标,[2:15]为颜色与图案
-                                        raise Exception("长度错误")
-                                    for elem_index, elem in enumerate(elems):  # 图案0~40, 颜色0~15
-                                        if elem_index >= 2:
-                                            if elem_index % 2 == 0:
-                                                if int(elem) < 0 or int(elem) > 15 + (elem_index == 2):  # 不能转换int会报错
-                                                    raise Exception("颜色值错误")
-                                            else:
-                                                if int(elem) < 0 or int(elem) > 40:
-                                                    raise Exception("图案值错误")
-                                        else:
-                                            if int(elem) < 0:
-                                                raise Exception("坐标不能为负数")
+                                    # if len(elems) < 2 * pattern.MAX_BANNER + 3:  # 检验长度, 其中[0:2]为坐标,[2:15]为颜色与图案
+                                    #     raise Exception("长度错误")
+                                    # for elem_index, elem in enumerate(elems):  # 图案0~40, 颜色0~15
+                                    #     if elem_index >= 2:
+                                    #         if elem_index % 2 == 0:
+                                    #             if int(elem) < 0 or int(elem) > 15 + (elem_index == 2):  # 不能转换int会报错
+                                    #                 raise Exception("颜色值错误")
+                                    #         else:
+                                    #             if int(elem) < 0 or int(elem) > 40:
+                                    #                 raise Exception("图案值错误")
+                                    #     else:
+                                    #         if int(elem) < 0:
+                                    #             raise Exception("坐标不能为负数")
+                                    for elem_index in range(pattern.MAX_BANNER):
+                                        pass
                             except Exception as e:
                                 print(e)
                                 continue
@@ -244,7 +274,7 @@ Ctrl+Shift+Q 生成MineCraft指令
                 self.ui.NewDesignTextEdit.setPlainText("无效的名称")
                 return
             if not self.LoadDesign(name):
-                self.designs[name] = ['2', '2', ['1:0:16:0:0:0:0:0:0:0:0:0:0:0:0', '1:1:16:0:0:0:0:0:0:0:0:0:0:0:0', '']]  # 初始化设计
+                self.designs[name] = ['2', '2', ['1:0:' + pattern.getDefaultBannerStr(), '1:1:' + pattern.getDefaultBannerStr(), '']]  # 初始化设计
             self.ui.NewDesignTextEdit.setPlainText("")
             self.ui.DesignSelectComboBox.addItem(name)
             self.ui.DesignSelectComboBox.setCurrentText(name)
@@ -320,19 +350,53 @@ Ctrl+Shift+Q 生成MineCraft指令
                         painter.fillRect(x_offset, y_offset, grid_size, 2 * grid_size, bg_color)
                         
                         # 绘制图案
-                        for i in range(6):
-                            color_idx = int(p[2 * i + 2])
-                            pattern_idx = int(p[2 * i + 1])
-                            
-                            icon = pattern.getIcon(pattern.type[pattern_idx])
-                            
-                            for y in range(40):
-                                for x in range(20):
-                                    pattern_color = QColor(*pattern.color[pattern.color_name[color_idx]] + [icon[y,x]])
-                                    painter.fillRect(x_offset + x * 5, y_offset + y * 5, 5, 5, pattern_color)
+                        for i in range(pattern.MAX_BANNER):
+                            try:
+                                color_idx = int(p[2 * i + 2])
+                                pattern_idx = int(p[2 * i + 1])
+                                
+                                icon = pattern.getIcon(pattern.type[pattern_idx])
+                                
+                                for y in range(40):
+                                    for x in range(20):
+                                        pattern_color = QColor(*pattern.color[pattern.color_name[color_idx]] + [icon[y,x]])
+                                        painter.fillRect(x_offset + x * 5, y_offset + y * 5, 5, 5, pattern_color)
+                            except IndexError:
+                                pass
         
         self.display_window.paintEvent = paintEvent
         self.display_window.show()
+
+    def CalculateDesignDye(self):
+        dye = [0] * 16
+        for key in self.current_banner_pattern:
+            banner = [int(i) for i in self.current_banner_pattern[key].split(":")]
+            if banner[0] == 16:
+                continue
+            dye[banner[0]] += 6
+            for idx in range((len(banner) - 1) // 2):
+                if banner[2 * idx + 1] != 0:
+                    dye[banner[2 * idx + 2]] += 1
+        msg = QMessageBox()
+        msg.setWindowTitle("染料计算")
+
+        htm_str = ""
+        for i in range(16):
+            htm_str += f'''
+            <p>{str(dye[i])}</p>
+            <img src="images/dyes/{str(i)}.png" width="26" height="26">
+            '''
+        
+        # 1132*52
+        html_content = f"""
+        <div style="text-align:center">
+            <p>{htm_str}</p>
+            <p>适用18w43a/1.14以上版本</p>
+        </div>
+        """
+        msg.setText(html_content)
+        msg.exec_()
+
 
     def CopyBanner(self):
         self.clipboard = self.current_banner_pattern[f"{self.ui.RowSpinBox.value() - self.current_banner[0] - 1}:{self.current_banner[1]}"] 
@@ -358,14 +422,17 @@ Ctrl+Shift+Q 生成MineCraft指令
 
                     command += f'''{{Slot:{generated_num % 27}b,id:"minecraft:{pattern.color_name[int(now_banner[0])]}_banner",Count:1b,tag:{{display: {{Name: '{{"text":"{_i}_{j}"}}'}},'''
 
-                    # 判断是否需要添加图案, 即[1:2:13]是否全为'0
-                    if now_banner[1::2] != ['0', '0', '0', '0', '0', '0']:
+                    # 判断是否需要添加图案, 即[1:2:13]是否全为'0'
+                    if not all(x == '0' for x in now_banner[1::2]):
 
                         command += f'''BlockEntityTag:{{Patterns:['''
 
-                        for k in range(6):
-                            if int(now_banner[2 * k + 1]) != 0:
-                                command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
+                        for k in range(pattern.MAX_BANNER):
+                            try:
+                                if int(now_banner[2 * k + 1]) != 0:
+                                    command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
+                            except IndexError:
+                                pass
                         command += f"]}}"
 
                     command += f'''}}}},'''

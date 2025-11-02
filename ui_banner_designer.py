@@ -85,12 +85,15 @@ class Ui_BannerDesigner(object):
         self.DisplayButton.setGeometry(QtCore.QRect(940, 10, 100, 40))
         self.DisplayButton.setObjectName("DisplayButton")
         self.RealMarginCheckBox = QtWidgets.QCheckBox(BannerDesigner)
-        self.RealMarginCheckBox.setGeometry(QtCore.QRect(1060, 10, 101, 40))
+        self.RealMarginCheckBox.setGeometry(QtCore.QRect(1070, 10, 101, 40))
         self.RealMarginCheckBox.setChecked(True)
         self.RealMarginCheckBox.setObjectName("RealMarginCheckBox")
         self.InfoButton = QtWidgets.QPushButton(BannerDesigner)
-        self.InfoButton.setGeometry(QtCore.QRect(1070, 60, 100, 40))
+        self.InfoButton.setGeometry(QtCore.QRect(1020, 130, 100, 40))
         self.InfoButton.setObjectName("InfoButton")
+        self.CalculateButton = QtWidgets.QPushButton(BannerDesigner)
+        self.CalculateButton.setGeometry(QtCore.QRect(1060, 60, 100, 40))
+        self.CalculateButton.setObjectName("CalculateButton")
 
         self.retranslateUi(BannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(BannerDesigner)
@@ -110,6 +113,7 @@ class Ui_BannerDesigner(object):
         self.DisplayButton.setText(_translate("BannerDesigner", "预览效果"))
         self.RealMarginCheckBox.setText(_translate("BannerDesigner", "真实间距"))
         self.InfoButton.setText(_translate("BannerDesigner", "快捷键提示"))
+        self.CalculateButton.setText(_translate("BannerDesigner", "染料计算"))
 
 
 if __name__ == "__main__":
