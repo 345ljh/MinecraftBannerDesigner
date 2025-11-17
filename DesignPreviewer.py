@@ -8,13 +8,14 @@ import pattern
 
 # 显示完整的设计, widget大小理论上无限
 class DesignPreviewerWidget(QWidget):
+    onBannerClicked = pyqtSignal(list)
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Design Previewer')
         self.setGeometry(0, 0, 800, 600)
 
         self.grid_size = 100  # 一个方块大小
-        self.zoom_factor = 3  # 缩放因子
+        self.zoom_factor = 1  # 缩放因子
         self.real_margin = True  # 真实间距
         self.pattern_size = [3, 3]  # 行列数
 
@@ -88,23 +89,29 @@ class DesignPreviewerWidget(QWidget):
     def mousePressEvent(self, event):
         real_grid_size = self.grid_size * self.zoom_factor
         if self.real_margin:
-            extra_offset_x = 2 * real_grid_size // 20
-            extra_offset_y = 4 * real_grid_size // 20
+            extra_offset_x = 2 * self.grid_size / 20
+            extra_offset_y = 4 * self.grid_size / 20
         else:
             extra_offset_x = 0
+            extra_offset_y = 0
         # 获取点击坐标
-        x = event.x() / self.zoom_factor - extra_offset_x / 2
-        y = event.y() / self.zoom_factor - extra_offset_y
+        x = event.x() / self.zoom_factor
+        y = event.y() / self.zoom_factor
         # 计算行列
         column = int(x // (self.grid_size + extra_offset_x))
         row = self.pattern_size[0] - 1 - int(y // (self.grid_size + extra_offset_y))
+        self.onBannerClicked.emit([row, column])
         
 
 # 对DesignPreviewerWidget进行接口封装, 以及使用滚轮实现固定大小窗口
 class DesignPreviewer(QWidget):
+    onBannerClicked = pyqtSignal(list)  # 点击显示界面, 返回对应banner的行列数
+
     def __init__(self):
         super().__init__()
         self.previewer = DesignPreviewerWidget()
+        self.previewer.onBannerClicked.connect(self.onBannerClicked.emit)
+        self.onBannerClicked.connect(lambda x: print(x))
         self.setupUi()
     
     def setupUi(self):
@@ -122,7 +129,21 @@ class DesignPreviewer(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(scroll_area)
 
+    def SetZoomFactor(self, zoom_factor):
+        '''
+        设置缩放比例
+            zoom_factor: 缩放比例(1.0为原始大小)
+        '''
+        self.previewer.zoom_factor = zoom_factor
+        self.previewer.to_resize = True
+        self.update()
+
     def SetPatternsData(self, patterns_data, size):
+        '''
+        传入设计
+            patterns_data: 设计数据  dict{'r:c': 'b:p:c:p:c:...', ...}
+            size: 设计大小 [row, column]
+        '''
         self.previewer.SetPatternsData(patterns_data, size)
 
 
