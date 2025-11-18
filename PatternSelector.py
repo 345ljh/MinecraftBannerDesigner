@@ -31,9 +31,9 @@ class PatternSelector(QWidget):
             model.appendRow(item)
 
         # 底色选项
-        self.ui.PatternColorComboBox.currentIndexChanged.connect(self.patternChanged.emit)
+        self.ui.ColorComboBox.currentIndexChanged.connect(self.patternChanged.emit)
         for key in pattern.color:
-            self.ui.PatternColorComboBox.setModel(model)
+            self.ui.ColorComboBox.setModel(model)
 
         while self.ui.PatternStyleGLayout.count():
             item = self.ui.PatternStyleGLayout.takeAt(0)
