@@ -10,40 +10,37 @@ class ToolBox(QWidget):
         self.ui = ui_toolbox.Ui_ToolBox()
         self.ui.setupUi(self)
 
-        self.blocks = [self.ui.FileButtonGridWidget]
-        self.buttons = [[self.ui.FileLoadButton, self.ui.FileSaveButton]]
-        self.labels = [self.ui.FileLabel, self.ui.FilePathLabel, self.ui.FilePathHintLabel]
+        self.adaptive_components = [
+            self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
+            self.ui.DesignLabel, self.ui.DesignNameHintLabel, self.ui.DesignNameText, self.ui.DesignSelectHintLabel, self.ui.DesignSelectComboBox, self.ui.DesignSearchButton, self.ui.DesignSelectButton, self.ui.DesignRowHintLabel, self.ui.DesignRowSpinBox, self.ui.DesignColumnHintLabel, self.ui.DesignColumnSpinBox,
+            self.ui.ViewLabel, self.ui.ViewPaddingCheckBox, self.ui.ViewZoomLabel, self.ui.ViewZoomUpButton, self.ui.ViewZoomDownButton,
+            self.ui.EditLabel, self.ui.EditCopyButton, self.ui.EditPasteButton, self.ui.EditRedoButton, self.ui.EditUndoButton,
+            self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton
+        ]
+        self.adaptive_component_ratios = [[1,1,1,1]] * len(self.adaptive_components)
         self.AdaptiveSetting()
         
     def AdaptiveSetting(self):
         '''自适应设置'''
-        self.ui.ToolBoxVLayout.setAlignment(Qt.AlignTop)
-        for block_id, block in enumerate(self.blocks):   
-            # 设置按钮的宽高比例约束
-            for button in self.buttons[block_id]:
-                button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                button.setMinimumSize(80, 80)
-                button.setMaximumSize(200, 200)
-            # 设置水平布局的约束
-            for i in range(len(self.buttons[block_id])):
-                self.ui.FileButtonGrid.setRowStretch(i, 1)
-            self.ui.FileButtonGrid.setAlignment(Qt.AlignLeft)
-            self.ui.FileButtonGrid.setAlignment(Qt.AlignTop)
-
+        # 记录自适应组件初始尺寸在屏幕中的比例
+        for i in range(len(self.adaptive_components)):
+            self.adaptive_component_ratios[i] = [self.adaptive_components[i].width() / self.width(),
+                                                 self.adaptive_components[i].height() / self.height(),
+                                                 self.adaptive_components[i].x() / self.width(),
+                                                 self.adaptive_components[i].y() / self.height(),
+                                                 self.adaptive_components[i].font().pointSize() / self.height()]  # 字号
+        # print(self.adaptive_component_ratios)
+            
     def resizeEvent(self, a0):
         super().resizeEvent(a0)
-
-        for block_id, block in enumerate(self.blocks):   
-            for button in self.buttons[block_id]:
-                width = self.width()
-                height = self.height()
-                size_limit = max(min(width, height) // 8, 80)
-                button.setMaximumSize(size_limit, size_limit)  # 动态设置设置最大尺寸避免过大
-        for label in self.labels:
-                # 设置label最大高度
-                label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-                font_height = label.fontMetrics().height()
-                label.setFixedHeight(font_height + 8)  # 固定高度，不会影响布局
+        for i in range(len(self.adaptive_components)):
+            self.adaptive_components[i].setGeometry(int(self.width() * self.adaptive_component_ratios[i][2]),
+                                                    int(self.height() * self.adaptive_component_ratios[i][3]),
+                                                    int(self.width() * self.adaptive_component_ratios[i][0]),
+                                                    int(self.height() * self.adaptive_component_ratios[i][1]))
+            font = self.adaptive_components[i].font()
+            font.setPointSize(int(self.height() * self.adaptive_component_ratios[i][4]))
+            self.adaptive_components[i].setFont(font)
 
 
 
