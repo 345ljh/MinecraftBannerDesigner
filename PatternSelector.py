@@ -12,7 +12,7 @@ import AdaptiveManager
 
 class PatternSelector(QWidget):
     patternChanged = pyqtSignal()  # 图案修改
-    sequenceAdjust = pyqtSignal(int)  # 序列调整按钮(向上0,向下1)
+    sequenceOperation = pyqtSignal(int, int)  # 序列调整或删除(par0:id, par1:向上0,向下1,删除2)
 
     def __init__(self, index = 0):
         super().__init__()
@@ -27,8 +27,9 @@ class PatternSelector(QWidget):
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
 
-        self.ui.UpButton.clicked.connect(lambda: self.sequenceAdjust.emit(0))
-        self.ui.DownButton.clicked.connect(lambda: self.sequenceAdjust.emit(1))
+        self.ui.UpButton.clicked.connect(lambda: self.sequenceOperation.emit(int(self.ui.Index.text()), 0))
+        self.ui.DownButton.clicked.connect(lambda: self.sequenceOperation.emit(int(self.ui.Index.text()), 1))
+        self.ui.DeleteButton.clicked.connect(lambda: self.sequenceOperation.emit(int(self.ui.Index.text()), 2))
         self.ui.Index.setText(str(index))
 
         model = QStandardItemModel()
@@ -109,7 +110,6 @@ class PatternSelector(QWidget):
     def resizeEvent(self, a0):
         super().resizeEvent(a0)
         self.adaptive_manager.AdaptiveResize()
-        self.setFixedHeight(self.height())  # 保证父级Layout按照该高度排列
         # 在resize事件中设置按钮为正方形
         self.updateButtonAspectRatio()
         

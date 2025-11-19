@@ -3,8 +3,9 @@ from PyQt5.QtCore import Qt
 import sys
 
 class AdaptiveManager():
-    def __init__(self, widget: QWidget, adaptive_components):
+    def __init__(self, widget: QWidget, adaptive_components, widget_fix_ratio=True):
         self.widget = widget
+        self.widget_fix_ratio = widget_fix_ratio # 固定窗口长宽比
         self.widget_initx = widget.width()
         self.widget_inity = widget.height()
         self.adaptive_components = adaptive_components
@@ -29,4 +30,7 @@ class AdaptiveManager():
             self.adaptive_components[i].setFont(font)
         # 窗口固定比例
         self.widget.resize(self.widget.width(), int(self.widget.width() / self.widget_initx * self.widget_inity))
+
+    def getCurrentRatio(self):
+        return (self.widget.width() / self.widget_initx, self.widget.height() / self.widget_inity)
         
