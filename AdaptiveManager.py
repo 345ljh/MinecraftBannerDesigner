@@ -5,6 +5,8 @@ import sys
 class AdaptiveManager():
     def __init__(self, widget: QWidget, adaptive_components):
         self.widget = widget
+        self.widget_initx = widget.width()
+        self.widget_inity = widget.height()
         self.adaptive_components = adaptive_components
         self.adaptive_component_ratios = [[1,1,1,1]] * len(self.adaptive_components)
 
@@ -25,3 +27,6 @@ class AdaptiveManager():
             font = self.adaptive_components[i].font()
             font.setPointSize(int(self.widget.height() * self.adaptive_component_ratios[i][4]))
             self.adaptive_components[i].setFont(font)
+        # 窗口固定比例
+        self.widget.resize(self.widget.width(), int(self.widget.width() / self.widget_initx * self.widget_inity))
+        

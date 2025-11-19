@@ -319,84 +319,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="EditLabel">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>360</y>
-     <width>311</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>14</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background: transparent</string>
-   </property>
-   <property name="text">
-    <string>编辑</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="EditUndoButton">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>400</y>
-     <width>51</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>撤销</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="EditRedoButton">
-   <property name="geometry">
-    <rect>
-     <x>80</x>
-     <y>400</y>
-     <width>51</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>重做</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="EditCopyButton">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>400</y>
-     <width>51</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>复制</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="EditPasteButton">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>400</y>
-     <width>51</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>粘贴</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="UtilsLabel">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>450</y>
+     <y>360</y>
      <width>311</width>
      <height>31</height>
     </rect>
@@ -417,7 +344,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>490</y>
+     <y>400</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -430,7 +357,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>490</y>
+     <y>400</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -443,7 +370,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>490</y>
+     <y>400</y>
      <width>101</width>
      <height>41</height>
     </rect>
