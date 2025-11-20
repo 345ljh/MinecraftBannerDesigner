@@ -71,7 +71,7 @@ class DesignPreviewerWidget(QWidget):
                     painter.fillRect(x_offset, y_offset, self.grid_size, 2 * self.grid_size, bg_color)
                     
                     # 绘制图案
-                    for i in range(pattern.MAX_BANNER):
+                    for i in range((len(p) - 1) // 2):
                         try:
                             color_idx = int(p[2 * i + 2])
                             pattern_idx = int(p[2 * i + 1])

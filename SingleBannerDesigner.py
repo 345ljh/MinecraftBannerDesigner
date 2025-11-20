@@ -6,6 +6,7 @@ import sys
 import ui_single_banner_designer
 import PatternSelector
 import pattern
+import utils
 import AdaptiveManager
 
 class BannerDisplayer(QWidget):
@@ -173,20 +174,38 @@ class SingleBannerDesigner(QWidget):
 
     def AddPattern(self):
         '''添加图案'''
-        w = PatternSelector.PatternSelector(self.pattern_len)
-        print(w.width(), w.height())
-        self.ui.PatternVLayout.addWidget(w)
-        self.ui.PatternVLayout.itemAt(self.pattern_len).widget().sequenceOperation.connect(lambda x, y: print(x, y))
-        w.patternChanged.connect(self.BannerDisplay)
-        self.pattern_len += 1
-        self.BannerDisplay()
+        b = self.GetBanner()
+        b.append(0)
+        b.append(0)
+        self.LoadBanner(utils.ListToStrBanner(b))
+    
+    def OperatePattern(self, id: int, operation: int):
+        '''图案顺序调整或删除'''
+        if operation == 0:
+            # 对应id和上面一个交换
+            if id != 0:
+                b = self.GetBanner()
+                b[2*id-1], b[2*id], b[2*id+1], b[2*id+2] = b[2*id+1], b[2*id+2], b[2*id-1], b[2*id]
+                self.LoadBanner(utils.ListToStrBanner(b))
+        if operation == 1:
+            # 对应id和下面一个交换
+            if id != self.pattern_len - 1:
+                b = self.GetBanner()
+                b[2*id+1], b[2*id+2], b[2*id+3], b[2*id+4] = b[2*id+3], b[2*id+4], b[2*id+1], b[2*id+2]
+                self.LoadBanner(utils.ListToStrBanner(b))
+        if operation == 2:
+            # 删除对应id
+            b = self.GetBanner()
+            del b[2*id+1:2*id+3]
+            self.LoadBanner(utils.ListToStrBanner(b))
 
-    def LoadBanner(self, str):
+
+    def LoadBanner(self, str_banner):
         '''加载字符串形式的旗帜'''
         # 单旗帜表示
-        splited = str.split(':')
-        self.ui.BannerColorComboBox.setCurrentIndex(int(splited[0]))
-        self.pattern_len = (len(splited) - 1) // 2
+        self.pattern_len, splited = utils.StrBannerToList(str_banner)
+
+        self.ui.BannerColorComboBox.setCurrentIndex(splited[0])
         # 清空原有染色步骤
         while self.ui.PatternVLayout.count():
             item = self.ui.PatternVLayout.takeAt(0)
@@ -202,12 +221,25 @@ class SingleBannerDesigner(QWidget):
         for i in range(self.pattern_len):
             w = PatternSelector.PatternSelector(i)
             self.ui.PatternVLayout.addWidget(w)
-            self.ui.PatternVLayout.itemAt(i).widget().button_group.button(int(splited[2*i+1])).setChecked(True)
-            self.ui.PatternVLayout.itemAt(i).widget().ui.ColorComboBox.setCurrentIndex(int(splited[2*i+2]))
-            self.ui.PatternVLayout.itemAt(i).widget().sequenceOperation.connect(lambda x, y: print(x, y))
-            w.patternChanged.connect(self.BannerDisplay)
+            self.ui.PatternVLayout.itemAt(i).widget().button_group.button(splited[2*i+1]).setChecked(True)
+            self.ui.PatternVLayout.itemAt(i).widget().ui.ColorComboBox.setCurrentIndex(splited[2*i+2])
+            self.ui.PatternVLayout.itemAt(i).widget().sequenceOperation.connect(self.OperatePattern)
+            self.ui.PatternVLayout.itemAt(i).widget().show()  # 强制显示
+            self.ui.PatternVLayout.itemAt(i).widget().patternChanged.connect(self.BannerDisplay)
+        self.ui.scrollAreaWidgetContents.adjustSize()
         self.BannerDisplay()
 
+    def GetBanner(self, isStr=False):
+        '''获取旗帜数据'''
+        patterns_data = [self.ui.BannerColorComboBox.currentIndex()]
+        for i in range(self.pattern_len):
+            patterns_data.append(self.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId())
+            patterns_data.append(self.ui.PatternVLayout.itemAt(i).widget().ui.ColorComboBox.currentIndex())
+        if isStr:
+            return utils.ListToStrBanner(patterns_data)
+        else:
+            return patterns_data
+        
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = SingleBannerDesigner()
