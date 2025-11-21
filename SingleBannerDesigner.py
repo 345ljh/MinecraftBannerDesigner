@@ -5,9 +5,10 @@ import sys
 
 import ui_single_banner_designer
 import PatternSelector
+import AdaptiveManager
 import pattern
 import utils
-import AdaptiveManager
+from collections import deque
 
 class BannerDisplayer(QWidget):
     def __init__(self, parent=None):
@@ -62,6 +63,8 @@ class SingleBannerDesigner(QWidget):
         self.ui = ui_single_banner_designer.Ui_SingleBannerDesigner()
         self.ui.setupUi(self)
         self.pattern_len = 0
+        self.operation_history_deque = deque(maxlen=11)
+        self.operation_redo_deque = deque(maxlen=10)
 
         # 替换原有的 BannerPainter 为自定义控件
         self.__replaceBannerPainter()
@@ -102,11 +105,14 @@ class SingleBannerDesigner(QWidget):
 
         for i in range(1):
             w = PatternSelector.PatternSelector(i)
-            w.patternChanged.connect(self.BannerDisplay)
+            w.patternChanged.connect(self.ChangePattern)
             self.ui.PatternVLayout.addWidget(w)
 
-        self.ui.BannerColorComboBox.currentIndexChanged.connect(self.BannerDisplay)
+        self.ui.BannerColorComboBox.currentIndexChanged.connect(self.ChangePattern)
         self.ui.AddButton.clicked.connect(self.AddPattern)
+        self.ui.ClearButton.clicked.connect(self.ClearPattern)
+        self.ui.UndoButton.clicked.connect(self.Undo)
+        self.ui.RedoButton.clicked.connect(self.Redo)
 
         self.adaptive_components = [
             self.banner_displayer, self.ui.BannerColorLabel, self.ui.BannerColorComboBox, self.ui.scrollArea,
@@ -150,7 +156,7 @@ class SingleBannerDesigner(QWidget):
             self.banner_displayer.setGeometry(old_widget.geometry())
             old_widget.deleteLater()
 
-    def BannerDisplay(self):
+    def __bannerDisplay(self):
         '''直接读取控件中的index进行渲染'''
         self.PatternChanged.emit()
         if self.ui.BannerColorComboBox.currentIndex() != 16:
@@ -172,12 +178,23 @@ class SingleBannerDesigner(QWidget):
             self.banner_displayer.setBackgroundColor(QColor(230, 230, 230))
             self.banner_displayer.setPatternsData([])
 
+    def ChangePattern(self):
+        '''修改图案'''
+        # 实际上读取控件index在LoadBanner中运行, 此处是对接口进行封装
+        b = self.GetBanner(isStr=True)
+        self.operation_history_deque.append(b)
+        self.operation_redo_deque.clear()
+        self.LoadBanner(b)
+
     def AddPattern(self):
         '''添加图案'''
         b = self.GetBanner()
         b.append(0)
         b.append(0)
-        self.LoadBanner(utils.ListToStrBanner(b))
+        b = utils.ListToStrBanner(b)
+        self.operation_history_deque.append(b)
+        self.operation_redo_deque.clear()
+        self.LoadBanner(b)
     
     def OperatePattern(self, id: int, operation: int):
         '''图案顺序调整或删除'''
@@ -186,25 +203,44 @@ class SingleBannerDesigner(QWidget):
             if id != 0:
                 b = self.GetBanner()
                 b[2*id-1], b[2*id], b[2*id+1], b[2*id+2] = b[2*id+1], b[2*id+2], b[2*id-1], b[2*id]
-                self.LoadBanner(utils.ListToStrBanner(b))
+                b = utils.ListToStrBanner(b)
+                self.operation_history_deque.append(b)
+                self.operation_redo_deque.clear()
+                self.LoadBanner(b)
         if operation == 1:
             # 对应id和下面一个交换
             if id != self.pattern_len - 1:
                 b = self.GetBanner()
                 b[2*id+1], b[2*id+2], b[2*id+3], b[2*id+4] = b[2*id+3], b[2*id+4], b[2*id+1], b[2*id+2]
-                self.LoadBanner(utils.ListToStrBanner(b))
+                b = utils.ListToStrBanner(b)
+                self.operation_history_deque.append(b)
+                self.operation_redo_deque.clear()
+                self.LoadBanner(b)
         if operation == 2:
             # 删除对应id
             b = self.GetBanner()
             del b[2*id+1:2*id+3]
-            self.LoadBanner(utils.ListToStrBanner(b))
+            b = utils.ListToStrBanner(b)
+            self.operation_history_deque.append(b)
+            self.operation_redo_deque.clear()
+            self.LoadBanner(b)
 
+    def ClearPattern(self):
+        '''清空图案'''
+        b = utils.ListToStrBanner([self.GetBanner()[0]])
+        self.operation_history_deque.append(b)
+        self.operation_redo_deque.clear()
+        self.LoadBanner(b)
 
-    def LoadBanner(self, str_banner):
+    def LoadBanner(self, str_banner, isNew=False):
         '''加载字符串形式的旗帜'''
+        # 清空历史记录
+        if isNew:  # 切换旗帜时清空历史记录
+            self.operation_history_deque.clear()
+            self.operation_history_deque.append(str_banner)
+            self.operation_redo_deque.clear()
         # 单旗帜表示
         self.pattern_len, splited = utils.StrBannerToList(str_banner)
-
         self.ui.BannerColorComboBox.setCurrentIndex(splited[0])
         # 清空原有染色步骤
         while self.ui.PatternVLayout.count():
@@ -225,9 +261,9 @@ class SingleBannerDesigner(QWidget):
             self.ui.PatternVLayout.itemAt(i).widget().ui.ColorComboBox.setCurrentIndex(splited[2*i+2])
             self.ui.PatternVLayout.itemAt(i).widget().sequenceOperation.connect(self.OperatePattern)
             self.ui.PatternVLayout.itemAt(i).widget().show()  # 强制显示
-            self.ui.PatternVLayout.itemAt(i).widget().patternChanged.connect(self.BannerDisplay)
+            self.ui.PatternVLayout.itemAt(i).widget().patternChanged.connect(self.ChangePattern)
         self.ui.scrollAreaWidgetContents.adjustSize()
-        self.BannerDisplay()
+        self.__bannerDisplay()
 
     def GetBanner(self, isStr=False):
         '''获取旗帜数据'''
@@ -240,9 +276,23 @@ class SingleBannerDesigner(QWidget):
         else:
             return patterns_data
         
+    def Undo(self):
+        '''撤销'''
+        if len(self.operation_history_deque) > 1:
+            b = self.operation_history_deque.pop()
+            self.operation_redo_deque.append(b)
+            self.LoadBanner(self.operation_history_deque[-1])
+
+    def Redo(self):
+        '''重做'''
+        if len(self.operation_redo_deque) > 0:
+            b = self.operation_redo_deque.pop()
+            self.operation_history_deque.append(b)
+            self.LoadBanner(b)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = SingleBannerDesigner()
-    window.LoadBanner("0:1:1:3:3")
+    window.LoadBanner("0:1:1:3:3", isNew=True)
     window.show()
     sys.exit(app.exec_())
