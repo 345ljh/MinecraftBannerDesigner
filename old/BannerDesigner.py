@@ -145,8 +145,6 @@ Ctrl+Shift+Q 生成MineCraft指令
             except IndexError:
                 pass
         self.single_designer.LoadPattern(new_banner)
-            
-
 
     def SaveBanner(self):  # 暂存旗帜
         self.ui.GridLayout.itemAtPosition(self.current_banner[0], self.current_banner[1]).widget().setStyleSheet("background-color: rgb(128, 255, 128)")

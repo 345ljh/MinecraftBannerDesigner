@@ -57,6 +57,7 @@ class BannerDisplayer(QWidget):
 
 class SingleBannerDesigner(QWidget):
     PatternChanged = pyqtSignal()
+    BannerUpdated = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -65,6 +66,7 @@ class SingleBannerDesigner(QWidget):
         self.pattern_len = 0
         self.operation_history_deque = deque(maxlen=11)
         self.operation_redo_deque = deque(maxlen=10)
+        self.clipboard = ""
 
         # 替换原有的 BannerPainter 为自定义控件
         self.__replaceBannerPainter()
@@ -103,20 +105,19 @@ class SingleBannerDesigner(QWidget):
         self.ui.PatternVLayout.setAlignment(Qt.AlignTop)
         self.ui.PatternVLayout.setSpacing(5)
 
-        for i in range(1):
-            w = PatternSelector.PatternSelector(i)
-            w.patternChanged.connect(self.ChangePattern)
-            self.ui.PatternVLayout.addWidget(w)
-
         self.ui.BannerColorComboBox.currentIndexChanged.connect(self.ChangePattern)
         self.ui.AddButton.clicked.connect(self.AddPattern)
         self.ui.ClearButton.clicked.connect(self.ClearPattern)
         self.ui.UndoButton.clicked.connect(self.Undo)
         self.ui.RedoButton.clicked.connect(self.Redo)
+        self.ui.CopyButton.clicked.connect(self.CopyPattern)
+        self.ui.PasteButton.clicked.connect(self.PastePattern)
+        self.ui.UpdateButton.clicked.connect(self.UpdateBanner)
 
         self.adaptive_components = [
             self.banner_displayer, self.ui.BannerColorLabel, self.ui.BannerColorComboBox, self.ui.scrollArea,
-            self.ui.AddButton, self.ui.ClearButton, self.ui.CopyButton, self.ui.PasteButton, self.ui.UndoButton, self.ui.RedoButton, self.ui.UpdateButton
+            self.ui.AddButton, self.ui.ClearButton, self.ui.CopyButton, self.ui.PasteButton, self.ui.HorizonalFlipButton, self.ui.VerticalFlipButton,
+            self.ui.UndoButton, self.ui.RedoButton, self.ui.UpdateButton
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
     
@@ -232,6 +233,19 @@ class SingleBannerDesigner(QWidget):
         self.operation_redo_deque.clear()
         self.LoadBanner(b)
 
+    def CopyPattern(self):
+        '''复制图案'''
+        self.clipboard = self.GetBanner(isStr=True)
+
+    def PastePattern(self):
+        '''粘贴图案'''
+        if self.clipboard != "":
+            self.operation_history_deque.append(self.GetBanner(isStr=True))
+            self.LoadBanner(self.clipboard)
+
+    def UpdateBanner(self):
+        self.BannerUpdated.emit(self.GetBanner(isStr=True))
+    
     def LoadBanner(self, str_banner, isNew=False):
         '''加载字符串形式的旗帜'''
         # 清空历史记录
@@ -293,6 +307,5 @@ class SingleBannerDesigner(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = SingleBannerDesigner()
-    window.LoadBanner("0:1:1:3:3", isNew=True)
     window.show()
     sys.exit(app.exec_())

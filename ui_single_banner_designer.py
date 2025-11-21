@@ -48,10 +48,10 @@ class Ui_SingleBannerDesigner(object):
         self.RedoButton.setGeometry(QtCore.QRect(320, 240, 61, 61))
         self.RedoButton.setObjectName("RedoButton")
         self.AddButton = QtWidgets.QPushButton(SingleBannerDesigner)
-        self.AddButton.setGeometry(QtCore.QRect(260, 70, 100, 61))
+        self.AddButton.setGeometry(QtCore.QRect(241, 80, 61, 61))
         self.AddButton.setObjectName("AddButton")
         self.ClearButton = QtWidgets.QPushButton(SingleBannerDesigner)
-        self.ClearButton.setGeometry(QtCore.QRect(260, 150, 100, 61))
+        self.ClearButton.setGeometry(QtCore.QRect(320, 80, 61, 61))
         self.ClearButton.setObjectName("ClearButton")
         self.CopyButton = QtWidgets.QPushButton(SingleBannerDesigner)
         self.CopyButton.setGeometry(QtCore.QRect(240, 320, 61, 61))
@@ -59,6 +59,12 @@ class Ui_SingleBannerDesigner(object):
         self.PasteButton = QtWidgets.QPushButton(SingleBannerDesigner)
         self.PasteButton.setGeometry(QtCore.QRect(320, 320, 61, 61))
         self.PasteButton.setObjectName("PasteButton")
+        self.HorizonalFlipButton = QtWidgets.QPushButton(SingleBannerDesigner)
+        self.HorizonalFlipButton.setGeometry(QtCore.QRect(240, 160, 61, 61))
+        self.HorizonalFlipButton.setObjectName("HorizonalFlipButton")
+        self.VerticalFlipButton = QtWidgets.QPushButton(SingleBannerDesigner)
+        self.VerticalFlipButton.setGeometry(QtCore.QRect(319, 160, 61, 61))
+        self.VerticalFlipButton.setObjectName("VerticalFlipButton")
 
         self.retranslateUi(SingleBannerDesigner)
         QtCore.QMetaObject.connectSlotsByName(SingleBannerDesigner)
@@ -71,10 +77,15 @@ class Ui_SingleBannerDesigner(object):
         self.UpdateButton.setText(_translate("SingleBannerDesigner", "更新"))
         self.UndoButton.setText(_translate("SingleBannerDesigner", "撤销"))
         self.RedoButton.setText(_translate("SingleBannerDesigner", "重做"))
-        self.AddButton.setText(_translate("SingleBannerDesigner", "添加染色"))
+        self.AddButton.setText(_translate("SingleBannerDesigner", "添加\n"
+"染色"))
         self.ClearButton.setText(_translate("SingleBannerDesigner", "清除"))
         self.CopyButton.setText(_translate("SingleBannerDesigner", "复制"))
         self.PasteButton.setText(_translate("SingleBannerDesigner", "粘贴"))
+        self.HorizonalFlipButton.setText(_translate("SingleBannerDesigner", "水平\n"
+"翻转"))
+        self.VerticalFlipButton.setText(_translate("SingleBannerDesigner", "垂直\n"
+"翻转"))
 
 
 if __name__ == "__main__":

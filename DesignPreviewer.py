@@ -115,7 +115,7 @@ class DesignPreviewer(QWidget):
         self.setupUi()
     
     def setupUi(self):
-        self.setGeometry(0, 0, 1000, 800)
+        self.setGeometry(0, 0, 1000, 900)
         self.setWindowTitle('DesignPreviewer Example')
         
         # 创建滚动区域
