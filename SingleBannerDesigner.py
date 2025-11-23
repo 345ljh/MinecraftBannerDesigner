@@ -113,6 +113,8 @@ class SingleBannerDesigner(QWidget):
         self.ui.CopyButton.clicked.connect(self.CopyPattern)
         self.ui.PasteButton.clicked.connect(self.PastePattern)
         self.ui.UpdateButton.clicked.connect(self.UpdateBanner)
+        self.ui.HorizonalFlipButton.clicked.connect(self.HorizonalFlip)
+        self.ui.VerticalFlipButton.clicked.connect(self.VerticalFlip)
 
         self.adaptive_components = [
             self.banner_displayer, self.ui.BannerColorLabel, self.ui.BannerColorComboBox, self.ui.scrollArea,
@@ -226,6 +228,20 @@ class SingleBannerDesigner(QWidget):
             self.operation_redo_deque.clear()
             self.LoadBanner(b)
 
+    def HorizonalFlip(self):
+        '''水平翻转'''
+        b = self.GetBanner()
+        for i in range(self.pattern_len):
+            b[2*i+1] = pattern.horizonal_flip_pair[b[2*i+1]]
+        self.LoadBanner(utils.ListToStrBanner(b))
+
+    def VerticalFlip(self):
+        '''垂直翻转'''
+        b = self.GetBanner()
+        for i in range(self.pattern_len):
+            b[2*i+1] = pattern.vertical_flip_pair[b[2*i+1]]
+        self.LoadBanner(utils.ListToStrBanner(b))
+
     def ClearPattern(self):
         '''清空图案'''
         b = utils.ListToStrBanner([self.GetBanner()[0]])
@@ -245,7 +261,7 @@ class SingleBannerDesigner(QWidget):
 
     def UpdateBanner(self):
         self.BannerUpdated.emit(self.GetBanner(isStr=True))
-    
+
     def LoadBanner(self, str_banner, isNew=False):
         '''加载字符串形式的旗帜'''
         try:
