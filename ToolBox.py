@@ -22,6 +22,8 @@ class ToolBox(QWidget):
         self.designs = {}  # 设计列表: {'name': [row, col, [r1:c1:banner1, ...]]}
         self.search_designs = {}  # 搜索结果
         self.current_design_name = ""
+        self.current_design_size = [3, 3]  # [row, col]
+        self.current_design_patterns = {}  #  dict{'r:c': 'b:p:c:p:c:...', ...}
         self.zoom_level = 7  # 缩放等级, 对应100%
         self.banner_pos = [1, 0]  # 当前点击的banner的行列数
 
@@ -161,6 +163,13 @@ class ToolBox(QWidget):
                 self.zoom_level -= 1
         self.ui.ViewZoomLabel.setText(f"缩放: {zoom_level_to_factor[self.zoom_level]}%")
         self.UpdateZoom.emit(zoom_level_to_factor[self.zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked())
+
+    def SetPatternsData(self, patterns_data, size):
+        self.current_design_patterns = patterns_data
+        self.current_design_size = size
+
+    def GetPatternsData(self):
+        return self.current_design_patterns, self.current_design_size
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

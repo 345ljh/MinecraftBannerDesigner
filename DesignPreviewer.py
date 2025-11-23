@@ -7,6 +7,7 @@ import PIL
 import pattern
 
 # 显示完整的设计, widget大小理论上无限
+# 该widget不应被直接调用
 class DesignPreviewerWidget(QWidget):
     onBannerClicked = pyqtSignal(list)
     def __init__(self):
@@ -18,6 +19,7 @@ class DesignPreviewerWidget(QWidget):
         self.zoom_factor = 1  # 缩放因子
         self.real_margin = True  # 真实间距
         self.pattern_size = [3, 3]  # 行列数
+        self.edit_banner_pos = [1,0]  # 标注当前编辑旗帜
 
         self.patterns_data = {}
         self.to_resize = False
@@ -89,6 +91,12 @@ class DesignPreviewerWidget(QWidget):
                         except IndexError:
                             pass
 
+        # 标注当前旗帜位置
+        painter.setPen(QPen(Qt.red, 3))
+        painter.drawRect(int(round((self.grid_size + extra_offset_x) * self.edit_banner_pos[1] + extra_offset_x / 2, 0)),
+            int(round((self.grid_size + extra_offset_y) * (self.pattern_size[0] - self.edit_banner_pos[0] - 1), 0)),
+                         round(self.grid_size), round(self.grid_size * 2))
+
     # 鼠标点击响应
     def mousePressEvent(self, event):
         real_grid_size = self.grid_size * self.zoom_factor
@@ -154,9 +162,15 @@ class DesignPreviewer(QWidget):
     def GetPatternsData(self):
         '''
         获取设计
-            返回格式  dict{'r:c': 'b:p:c:p:c:...', ...}
+            ret0  dict{'r:c': 'b:p:c:p:c:...', ...}
+            ret1  [row, column]
         '''
-        return self.previewer.GetPatternsData()
+        return self.previewer.GetPatternsData(), self.previewer.pattern_size
+    
+    def SetEditBannerPosition(self, pos: list):
+        '''设置编辑旗帜位置'''
+        self.previewer.edit_banner_pos = pos
+        self.previewer.update()
 
 
 if __name__ == '__main__':

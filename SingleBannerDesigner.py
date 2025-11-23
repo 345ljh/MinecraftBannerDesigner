@@ -277,6 +277,7 @@ class SingleBannerDesigner(QWidget):
                     w.button_group.button(splited[2*i+1]).setChecked(True)
                 w.ui.ColorComboBox.setCurrentIndex(splited[2*i+2])
                 w.blockSignals(False)
+                w.show()  # 强制显示
                 
                 # 连接信号
                 w.sequenceOperation.connect(self.OperatePattern)

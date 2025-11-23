@@ -12,6 +12,7 @@ import pattern
 
 
 class MainWindow(QWidget):
+    # mainwindow本身不存储数据(调用数据主要放在toolbox),负责调用其他组件
     def __init__(self):
         super().__init__()
 
@@ -32,6 +33,17 @@ class MainWindow(QWidget):
         self.toolbox.LoadDesign.connect(self.DesignDisplay)
         self.toolbox.UpdateZoom.connect(self.design_previewer.SetZoomFactor)
         self.design_previewer.onBannerClicked.connect(self.LoadBanner)
+        self.single_banner_designer.BannerUpdated.connect(lambda x: print(self.toolbox.banner_pos, x))
+
+        self.adaptive_components = [
+            self.design_previewer, self.single_banner_designer, self.toolbox
+        ]
+        self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
+        
+    def resizeEvent(self, a0):
+        super().resizeEvent(a0)
+        self.adaptive_manager.AdaptiveResize()
+
 
     def DesignDisplay(self, design):
         '''design_previewer渲染设计'''
@@ -44,12 +56,23 @@ class MainWindow(QWidget):
             key = b[0] + ":" + b[1]
             patterns_data[key] = b[2]
         self.design_previewer.SetPatternsData(patterns_data, size)
+        self.toolbox.SetPatternsData(patterns_data, size)
+        self.LoadBanner([1, 0])
 
-    def LoadBanner(self, pos):
+    def LoadBanner(self, pos=[1,0]):
+        '''设置preview中banner坐标提示(红框), 并加载singleDesigner的banner配置界面'''
+        pd, size = self.toolbox.GetPatternsData()
+        if pos is None or len(pos) != 2:
+            return
+        if pos[0] < 1 or pos[1] < 0 or pos[0] >= size[0] or pos[1] >= size[1]:
+            return
+        if f"{pos[0]}:{pos[1]}" in pd:
+            b = pd[f"{pos[0]}:{pos[1]}"]
+        else:
+            b = "16"
+        self.design_previewer.SetEditBannerPosition(pos)
         self.toolbox.banner_pos = pos
-        b = self.design_previewer.GetPatternsData()[f"{pos[0]}:{pos[1]}"]
         self.single_banner_designer.LoadBanner(b, isNew=True)
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
