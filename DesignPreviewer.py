@@ -29,6 +29,10 @@ class DesignPreviewerWidget(QWidget):
         self.to_resize = True
         self.update()
 
+    # 获取设计
+    def GetPatternsData(self):
+        return self.patterns_data
+
     # 渲染旗帜
     def paintEvent(self, event):
         # 计算窗口大小(计算取float)
@@ -111,7 +115,6 @@ class DesignPreviewer(QWidget):
         super().__init__()
         self.previewer = DesignPreviewerWidget()
         self.previewer.onBannerClicked.connect(self.onBannerClicked.emit)
-        self.onBannerClicked.connect(lambda x: print(x))
         self.setupUi()
     
     def setupUi(self):
@@ -129,14 +132,16 @@ class DesignPreviewer(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(scroll_area)
 
-    def SetZoomFactor(self, zoom_factor):
+    def SetZoomFactor(self, zoom_factor, real_margin):
         '''
         设置缩放比例
             zoom_factor: 缩放比例(1.0为原始大小)
         '''
         self.previewer.zoom_factor = zoom_factor
+        self.previewer.real_margin = real_margin
         self.previewer.to_resize = True
-        self.update()
+        # self.update()
+        self.SetPatternsData(self.previewer.patterns_data, self.previewer.pattern_size)  # 强制更新
 
     def SetPatternsData(self, patterns_data, size):
         '''
@@ -145,6 +150,13 @@ class DesignPreviewer(QWidget):
             size: 设计大小 [row, column]
         '''
         self.previewer.SetPatternsData(patterns_data, size)
+
+    def GetPatternsData(self):
+        '''
+        获取设计
+            返回格式  dict{'r:c': 'b:p:c:p:c:...', ...}
+        '''
+        return self.previewer.GetPatternsData()
 
 
 if __name__ == '__main__':

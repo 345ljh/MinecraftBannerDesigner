@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScr
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence
-import sys, os
+import sys, os, psutil
 import PIL
 
 import ToolBox, SingleBannerDesigner, DesignPreviewer
@@ -30,6 +30,8 @@ class MainWindow(QWidget):
 
         # 设置信号连接
         self.toolbox.LoadDesign.connect(self.DesignDisplay)
+        self.toolbox.UpdateZoom.connect(self.design_previewer.SetZoomFactor)
+        self.design_previewer.onBannerClicked.connect(self.LoadBanner)
 
     def DesignDisplay(self, design):
         '''design_previewer渲染设计'''
@@ -42,6 +44,11 @@ class MainWindow(QWidget):
             key = b[0] + ":" + b[1]
             patterns_data[key] = b[2]
         self.design_previewer.SetPatternsData(patterns_data, size)
+
+    def LoadBanner(self, pos):
+        self.toolbox.banner_pos = pos
+        b = self.design_previewer.GetPatternsData()[f"{pos[0]}:{pos[1]}"]
+        self.single_banner_designer.LoadBanner(b, isNew=True)
 
 
 if __name__ == '__main__':

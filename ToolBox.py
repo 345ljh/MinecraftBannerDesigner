@@ -6,8 +6,12 @@ import pattern
 
 import ui_toolbox
 import AdaptiveManager
+
+zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
+
 class ToolBox(QWidget):
     LoadDesign = pyqtSignal(list)  # [row, col, [r1:c1:banner1, ...]]
+    UpdateZoom = pyqtSignal(float, bool)  # zoom_factor, real_margin
 
     def __init__(self):
         super().__init__()
@@ -18,6 +22,8 @@ class ToolBox(QWidget):
         self.designs = {}  # 设计列表: {'name': [row, col, [r1:c1:banner1, ...]]}
         self.search_designs = {}  # 搜索结果
         self.current_design_name = ""
+        self.zoom_level = 7  # 缩放等级, 对应100%
+        self.banner_pos = [1, 0]  # 当前点击的banner的行列数
 
         self.ui.FileLoadButton.clicked.connect(self.OpenFile)
         self.ui.FileSaveButton.clicked.connect(self.SaveFile)
@@ -25,6 +31,10 @@ class ToolBox(QWidget):
         self.ui.DesignSearchButton.clicked.connect(self.SearchDesign)
         self.ui.DesignRowSpinBox.valueChanged.connect(self.ChangeDesignSize)
         self.ui.DesignColumnSpinBox.valueChanged.connect(self.ChangeDesignSize)
+        self.ui.DesignSelectButton.clicked.connect(self.SelectDesign)
+        self.ui.ViewZoomUpButton.clicked.connect(lambda: self.SetZoom(ZoomUp=True))
+        self.ui.ViewZoomDownButton.clicked.connect(lambda: self.SetZoom(ZoomUp=False))
+        self.ui.ViewPaddingCheckBox.clicked.connect(lambda: self.UpdateZoom.emit(zoom_level_to_factor[self.zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked()))
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
@@ -120,6 +130,37 @@ class ToolBox(QWidget):
         self.ui.DesignSelectComboBox.clear()
         for name in self.search_designs:
             self.ui.DesignSelectComboBox.addItem(name)
+
+    def SelectDesign(self):
+        name = self.ui.DesignNameText.text()
+        if name != "":
+            if ',' in name or ':' in name:
+                self.ui.DesignNameText.setText("无效的名称")
+                return
+            if name in self.designs:  # 名称已存在
+                self.current_design_name = name
+                self.ui.DesignSelectComboBox.setCurrentText(name)
+                self.DesignSelected()
+            else:
+                self.designs[name] = [3,3,[]]
+                self.ui.DesignSelectComboBox.addItem(name)
+                self.ui.DesignSelectComboBox.setCurrentText(name)
+                self.current_design_name = name
+                self.DesignSelected()
+
+            self.ui.DesignNameText.setText("")
+        else:
+            self.ui.DesignNameText.setText("设计名不能为空")
+
+    def SetZoom(self, ZoomUp=True):
+        if ZoomUp:
+            if self.zoom_level < len(zoom_level_to_factor) - 1:
+                self.zoom_level += 1
+        else:
+            if self.zoom_level > 0:
+                self.zoom_level -= 1
+        self.ui.ViewZoomLabel.setText(f"缩放: {zoom_level_to_factor[self.zoom_level]}%")
+        self.UpdateZoom.emit(zoom_level_to_factor[self.zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
