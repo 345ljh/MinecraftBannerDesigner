@@ -111,6 +111,7 @@ class ToolBox(QWidget):
 
     def DesignSelected(self):
         if self.ui.DesignSelectComboBox.currentText():
+            self.current_design_name = self.ui.DesignSelectComboBox.currentText()
             r = self.designs[self.ui.DesignSelectComboBox.currentText()][0]
             c = self.designs[self.ui.DesignSelectComboBox.currentText()][1]
             self.ui.DesignRowSpinBox.setValue(r)  # 加载行数
@@ -149,17 +150,18 @@ class ToolBox(QWidget):
                 self.ui.DesignSelectComboBox.setCurrentText(name)
                 self.current_design_name = name
                 self.DesignSelected()
-
             self.ui.DesignNameText.setText("")
         else:
             self.ui.DesignNameText.setText("设计名不能为空")
 
     def SaveCurrentDesign(self):
         '''保存当前设计到designs列表中'''
+        print(self.current_design_name)
         cd = []
         for banner_key in self.current_design_patterns:
             cd.append(f"{banner_key}:{self.current_design_patterns[banner_key]}")
         self.designs[self.current_design_name] = [self.current_design_size[0], self.current_design_size[1], cd]
+        print(self.designs)
 
     def SetZoom(self, ZoomUp=True):
         if ZoomUp:

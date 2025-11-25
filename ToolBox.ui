@@ -179,7 +179,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </rect>
    </property>
    <property name="text">
-    <string/>
+    <string>新设计</string>
    </property>
   </widget>
   <widget class="QLabel" name="DesignRowHintLabel">
