@@ -154,6 +154,13 @@ class ToolBox(QWidget):
         else:
             self.ui.DesignNameText.setText("设计名不能为空")
 
+    def SaveCurrentDesign(self):
+        '''保存当前设计到designs列表中'''
+        cd = []
+        for banner_key in self.current_design_patterns:
+            cd.append(f"{banner_key}:{self.current_design_patterns[banner_key]}")
+        self.designs[self.current_design_name] = [self.current_design_size[0], self.current_design_size[1], cd]
+
     def SetZoom(self, ZoomUp=True):
         if ZoomUp:
             if self.zoom_level < len(zoom_level_to_factor) - 1:

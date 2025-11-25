@@ -33,7 +33,7 @@ class MainWindow(QWidget):
         self.toolbox.LoadDesign.connect(self.DesignDisplay)
         self.toolbox.UpdateZoom.connect(self.design_previewer.SetZoomFactor)
         self.design_previewer.onBannerClicked.connect(self.LoadBanner)
-        self.single_banner_designer.BannerUpdated.connect(lambda x: print(self.toolbox.banner_pos, x))
+        self.single_banner_designer.BannerUpdated.connect(self.SetBanner)
 
         self.adaptive_components = [
             self.design_previewer, self.single_banner_designer, self.toolbox
@@ -61,7 +61,8 @@ class MainWindow(QWidget):
 
     def LoadBanner(self, pos=[1,0]):
         '''设置preview中banner坐标提示(红框), 并加载singleDesigner的banner配置界面'''
-        pd, size = self.toolbox.GetPatternsData()
+        pd = self.toolbox.current_design_patterns
+        size = self.toolbox.current_design_size
         if pos is None or len(pos) != 2:
             return
         if pos[0] < 1 or pos[1] < 0 or pos[0] >= size[0] or pos[1] >= size[1]:
@@ -73,6 +74,15 @@ class MainWindow(QWidget):
         self.design_previewer.SetEditBannerPosition(pos)
         self.toolbox.banner_pos = pos
         self.single_banner_designer.LoadBanner(b, isNew=True)
+
+    def SetBanner(self, banner):
+        '''singleDesigner更新banner后, 更新design_previewer和toolbox'''
+        b = self.single_banner_designer.GetBanner(isStr=True)
+        pos = self.toolbox.banner_pos
+        self.toolbox.current_design_patterns[f"{pos[0]}:{pos[1]}"] = b
+        self.toolbox.SaveCurrentDesign()
+        self.design_previewer.SetPatternsData(self.toolbox.current_design_patterns, self.toolbox.current_design_size)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
