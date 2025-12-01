@@ -57,7 +57,7 @@ class BannerDisplayer(QWidget):
 
 class SingleBannerDesigner(QWidget):
     PatternChanged = pyqtSignal()
-    BannerUpdated = pyqtSignal(str)
+    BannerUpdated = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -270,7 +270,7 @@ class SingleBannerDesigner(QWidget):
             self.LoadBanner(self.clipboard)
 
     def UpdateBanner(self):
-        self.BannerUpdated.emit(self.GetBanner(isStr=True))
+        self.BannerUpdated.emit()
 
     def LoadBanner(self, str_banner, isNew=False):
         '''加载字符串形式的旗帜'''

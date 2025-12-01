@@ -8,10 +8,11 @@ import PIL
 import ToolBox, SingleBannerDesigner, DesignPreviewer
 import AdaptiveManager
 import pattern
-
+import DataStorage
 
 class MainWindow(QWidget):
-    # mainwindow本身不存储数据(调用数据主要放在toolbox),负责调用其他组件
+    # 窗口组件本身不存储数据, 数据通过DataStorage单例进行共享
+    # mainwindow负责连接与调用其他组件
     def __init__(self):
         super().__init__()
 
@@ -71,13 +72,13 @@ class MainWindow(QWidget):
         for i, shortcut in enumerate(self.shortcut_patterncolor):
             shortcut.activated.connect(lambda idx=i: self.single_banner_designer.SetLastPatternColor(idx))
         self.shortcut_upbanner = QShortcut(QKeySequence("Up"), self)  # 选择上方banner
-        self.shortcut_upbanner.activated.connect(lambda: self.LoadBanner([self.toolbox.banner_pos[0] + 1, self.toolbox.banner_pos[1]]))
+        self.shortcut_upbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0] + 1, DataStorage.get_instance().banner_pos[1]]))
         self.shortcut_downbanner = QShortcut(QKeySequence("Down"), self)  # 选择下方banner
-        self.shortcut_downbanner.activated.connect(lambda: self.LoadBanner([self.toolbox.banner_pos[0] - 1, self.toolbox.banner_pos[1]]))
+        self.shortcut_downbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0] - 1, DataStorage.get_instance().banner_pos[1]]))
         self.shortcut_leftbanner = QShortcut(QKeySequence("Left"), self)  # 选择左方banner
-        self.shortcut_leftbanner.activated.connect(lambda: self.LoadBanner([self.toolbox.banner_pos[0], self.toolbox.banner_pos[1] - 1]))
+        self.shortcut_leftbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0], DataStorage.get_instance().banner_pos[1] - 1]))
         self.shortcut_rightbanner = QShortcut(QKeySequence("Right"), self)  # 选择右方banner
-        self.shortcut_rightbanner.activated.connect(lambda: self.LoadBanner([self.toolbox.banner_pos[0], self.toolbox.banner_pos[1] + 1]))
+        self.shortcut_rightbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0], DataStorage.get_instance().banner_pos[1] + 1]))
         self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+Shift+N"), self)  # 选择/新建设计
         self.shortcut_new_design.activated.connect(self.toolbox.SelectDesign)
         self.shortcut_openfile = QShortcut(QKeySequence("Ctrl+Shift+O"), self)  # 打开文件
@@ -96,24 +97,26 @@ class MainWindow(QWidget):
         super().resizeEvent(a0)
         self.adaptive_manager.AdaptiveResize()
 
-    def DesignDisplay(self, design):
-        '''design_previewer渲染设计'''
-        # 输入: [row, col, [r1:c1:banner1, ...]]
+    def DesignDisplay(self, design_name):
+        '''加载设计并转换格式'''
+        # 原格式: [row, col, [r1:c1:banner1, ...]]
         # 输出: {"r1:c1", banner1, ...}
+        design = DataStorage.get_instance().designs[design_name]
         size = [design[0], design[1]]
         patterns_data = {}
         for banner in design[2]:
             b = banner.split(":", 2)
             key = b[0] + ":" + b[1]
             patterns_data[key] = b[2]
-        self.design_previewer.SetPatternsData(patterns_data, size)
-        self.toolbox.SetPatternsData(patterns_data, size)
+        self.design_previewer.Update()
+        DataStorage.get_instance().current_design_patterns = patterns_data
+        DataStorage.get_instance().current_design_size = size
         self.LoadBanner([1, 0])
 
     def LoadBanner(self, pos=[1,0]):
         '''设置preview中banner坐标提示(红框), 并加载singleDesigner的banner配置界面'''
-        pd = self.toolbox.current_design_patterns
-        size = self.toolbox.current_design_size
+        pd = DataStorage.get_instance().current_design_patterns
+        size = DataStorage.get_instance().current_design_size
         if pos is None or len(pos) != 2:
             return
         if pos[0] < 1 or pos[1] < 0 or pos[0] >= size[0] or pos[1] >= size[1]:
@@ -123,21 +126,20 @@ class MainWindow(QWidget):
         else:
             b = "16"
         self.design_previewer.SetEditBannerPosition(pos)
-        self.toolbox.banner_pos = pos
+        DataStorage.get_instance().banner_pos = pos
         self.single_banner_designer.LoadBanner(b, isNew=True)
 
-    def SetBanner(self, banner):
+    def SetBanner(self):
         '''singleDesigner更新banner后, 更新design_previewer和toolbox'''
         b = self.single_banner_designer.GetBanner(isStr=True)
-        pos = self.toolbox.banner_pos
-        self.toolbox.current_design_patterns[f"{pos[0]}:{pos[1]}"] = b
+        pos = DataStorage.get_instance().banner_pos
+        DataStorage.get_instance().current_design_patterns[f"{pos[0]}:{pos[1]}"] = b
         self.toolbox.SaveCurrentDesign()
-        self.design_previewer.SetPatternsData(self.toolbox.current_design_patterns, self.toolbox.current_design_size)
+        self.design_previewer.Update()
 
     def MultiKey(self, key):
         '''多键操作, 一组键长度最大为5'''
         self.multi_key_sequence += key
-        print(self.multi_key_sequence)
         if len(self.multi_key_sequence) > 10:
             self.multi_key_sequence = self.multi_key_sequence[-5:]
         for i in range(len(pattern.multi_operation)):

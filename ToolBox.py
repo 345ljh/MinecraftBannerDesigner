@@ -6,11 +6,12 @@ import pattern
 
 import ui_toolbox
 import AdaptiveManager
+import DataStorage
 
 zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
 
 class ToolBox(QWidget):
-    LoadDesign = pyqtSignal(list)  # [row, col, [r1:c1:banner1, ...]]
+    LoadDesign = pyqtSignal(str)  # design名称
     UpdateZoom = pyqtSignal(float, bool)  # zoom_factor, real_margin
 
     def __init__(self):
@@ -18,14 +19,14 @@ class ToolBox(QWidget):
         self.ui = ui_toolbox.Ui_ToolBox()
         self.ui.setupUi(self)
 
-        self.filepath = ""  # 当前文件路径
-        self.designs = {}  # 设计列表: {'name': [row, col, [r1:c1:banner1, ...]]}
-        self.search_designs = {}  # 搜索结果
-        self.current_design_name = ""
-        self.current_design_size = [3, 3]  # [row, col]
-        self.current_design_patterns = {}  #  dict{'r:c': 'b:p:c:p:c:...', ...}
-        self.zoom_level = 7  # 缩放等级, 对应100%
-        self.banner_pos = [1, 0]  # 当前点击的banner的行列数
+        DataStorage.get_instance().filepath = ""  # 当前文件路径
+        DataStorage.get_instance().designs = {}  # 设计列表: {'name': [row, col, [r1:c1:banner1, ...]]}
+        DataStorage.get_instance().search_designs = {}  # 搜索结果
+        DataStorage.get_instance().current_design_name = ""
+        DataStorage.get_instance().current_design_size = [3, 3]  # [row, col]
+        DataStorage.get_instance().current_design_patterns = {}  #  dict{'r:c': 'b:p:c:p:c:...', ...}
+        DataStorage.get_instance().zoom_level = 7  # 缩放等级, 对应100%
+        DataStorage.get_instance().banner_pos = [1, 0]  # 当前点击的banner的行列数
 
         self.ui.FileLoadButton.clicked.connect(self.OpenFile)
         self.ui.FileSaveButton.clicked.connect(self.SaveFile)
@@ -36,7 +37,7 @@ class ToolBox(QWidget):
         self.ui.DesignSelectButton.clicked.connect(self.SelectDesign)
         self.ui.ViewZoomUpButton.clicked.connect(lambda: self.SetZoom(ZoomUp=True))
         self.ui.ViewZoomDownButton.clicked.connect(lambda: self.SetZoom(ZoomUp=False))
-        self.ui.ViewPaddingCheckBox.clicked.connect(lambda: self.UpdateZoom.emit(zoom_level_to_factor[self.zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked()))
+        self.ui.ViewPaddingCheckBox.clicked.connect(lambda: self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked()))
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
@@ -53,8 +54,8 @@ class ToolBox(QWidget):
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         if path:
-            self.designs = {}
-            self.filepath = path
+            DataStorage.get_instance().designs = {}
+            DataStorage.get_instance().filepath = path
             self.ui.FilePathText.setText(path)
             if os.path.exists(path):
                 self.ui.DesignSelectComboBox.clear()
@@ -85,10 +86,10 @@ class ToolBox(QWidget):
                                 print(e)
                                 continue
                             # 存储
-                            self.designs[line[0]] = [int(line[1]), int(line[2]), line[3:]]
+                            DataStorage.get_instance().designs[line[0]] = [int(line[1]), int(line[2]), line[3:]]
                             self.ui.DesignSelectComboBox.addItem(line[0])
                         # 加载第一个
-                        if self.designs != {}:
+                        if DataStorage.get_instance().designs != {}:
                             self.ui.DesignSelectComboBox.setCurrentIndex(0)
                             self.DesignSelected()
                 except UnicodeDecodeError:
@@ -96,14 +97,14 @@ class ToolBox(QWidget):
 
     def SaveFile(self):
         # 检查路径是否为空
-        if self.filepath == "":
-            self.filepath, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
+        if DataStorage.get_instance().filepath == "":
+            DataStorage.get_instance().filepath, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
         # 打开文件
-        if self.filepath != "":
+        if DataStorage.get_instance().filepath != "":
             # 使用UTF-8编码保存
-            with open(self.filepath, "w", encoding="utf-8") as f:
-                for name in self.designs:
-                    design = self.designs[name]
+            with open(DataStorage.get_instance().filepath, "w", encoding="utf-8") as f:
+                for name in DataStorage.get_instance().designs:
+                    design = DataStorage.get_instance().designs[name]
                     design_str = f"{name},{design[0]},{design[1]},"
                     for banner in design[2]:
                         design_str = design_str + banner + ","
@@ -111,27 +112,27 @@ class ToolBox(QWidget):
 
     def DesignSelected(self):
         if self.ui.DesignSelectComboBox.currentText():
-            self.current_design_name = self.ui.DesignSelectComboBox.currentText()
-            r = self.designs[self.ui.DesignSelectComboBox.currentText()][0]
-            c = self.designs[self.ui.DesignSelectComboBox.currentText()][1]
+            DataStorage.get_instance().current_design_name = self.ui.DesignSelectComboBox.currentText()
+            r = DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][0]
+            c = DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][1]
             self.ui.DesignRowSpinBox.setValue(r)  # 加载行数
             self.ui.DesignColumnSpinBox.setValue(c)  # 加载列数
-            self.LoadDesign.emit(self.designs[self.ui.DesignSelectComboBox.currentText()])
+            self.LoadDesign.emit(self.ui.DesignSelectComboBox.currentText())
 
     def ChangeDesignSize(self):
         if self.ui.DesignSelectComboBox.currentText():
-            self.designs[self.ui.DesignSelectComboBox.currentText()][0] = self.ui.DesignRowSpinBox.value()
-            self.designs[self.ui.DesignSelectComboBox.currentText()][1] = self.ui.DesignColumnSpinBox.value()
-            self.LoadDesign.emit(self.designs[self.ui.DesignSelectComboBox.currentText()])
+            DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][0] = self.ui.DesignRowSpinBox.value()
+            DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][1] = self.ui.DesignColumnSpinBox.value()
+            self.LoadDesign.emit(self.ui.DesignSelectComboBox.currentText())
             
     def SearchDesign(self):
         '''匹配搜索'''
-        self.search_designs = {}
-        for design_name in self.designs:
+        DataStorage.get_instance().search_designs = {}
+        for design_name in DataStorage.get_instance().designs:
             if self.ui.DesignNameText.text() in design_name:
-                self.search_designs[design_name] = self.designs[design_name]
+                DataStorage.get_instance().search_designs[design_name] = DataStorage.get_instance().designs[design_name]
         self.ui.DesignSelectComboBox.clear()
-        for name in self.search_designs:
+        for name in DataStorage.get_instance().search_designs:
             self.ui.DesignSelectComboBox.addItem(name)
 
     def SelectDesign(self):
@@ -140,15 +141,15 @@ class ToolBox(QWidget):
             if ',' in name or ':' in name:
                 self.ui.DesignNameText.setText("无效的名称")
                 return
-            if name in self.designs:  # 名称已存在
-                self.current_design_name = name
+            if name in DataStorage.get_instance().designs:  # 名称已存在
+                DataStorage.get_instance().current_design_name = name
                 self.ui.DesignSelectComboBox.setCurrentText(name)
                 self.DesignSelected()
             else:
-                self.designs[name] = [3,3,[]]
+                DataStorage.get_instance().designs[name] = [3,3,[]]
                 self.ui.DesignSelectComboBox.addItem(name)
                 self.ui.DesignSelectComboBox.setCurrentText(name)
-                self.current_design_name = name
+                DataStorage.get_instance().current_design_name = name
                 self.DesignSelected()
             self.ui.DesignNameText.setText("")
         else:
@@ -156,29 +157,20 @@ class ToolBox(QWidget):
 
     def SaveCurrentDesign(self):
         '''保存当前设计到designs列表中'''
-        print(self.current_design_name)
         cd = []
-        for banner_key in self.current_design_patterns:
-            cd.append(f"{banner_key}:{self.current_design_patterns[banner_key]}")
-        self.designs[self.current_design_name] = [self.current_design_size[0], self.current_design_size[1], cd]
-        print(self.designs)
+        for banner_key in DataStorage.get_instance().current_design_patterns:
+            cd.append(f"{banner_key}:{DataStorage.get_instance().current_design_patterns[banner_key]}")
+        DataStorage.get_instance().designs[DataStorage.get_instance().current_design_name] = [DataStorage.get_instance().current_design_size[0], DataStorage.get_instance().current_design_size[1], cd]
 
     def SetZoom(self, ZoomUp=True):
         if ZoomUp:
-            if self.zoom_level < len(zoom_level_to_factor) - 1:
-                self.zoom_level += 1
+            if DataStorage.get_instance().zoom_level < len(zoom_level_to_factor) - 1:
+                DataStorage.get_instance().zoom_level += 1
         else:
-            if self.zoom_level > 0:
-                self.zoom_level -= 1
-        self.ui.ViewZoomLabel.setText(f"缩放: {zoom_level_to_factor[self.zoom_level]}%")
-        self.UpdateZoom.emit(zoom_level_to_factor[self.zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked())
-
-    def SetPatternsData(self, patterns_data, size):
-        self.current_design_patterns = patterns_data
-        self.current_design_size = size
-
-    def GetPatternsData(self):
-        return self.current_design_patterns, self.current_design_size
+            if DataStorage.get_instance().zoom_level > 0:
+                DataStorage.get_instance().zoom_level -= 1
+        self.ui.ViewZoomLabel.setText(f"缩放: {zoom_level_to_factor[DataStorage.get_instance().zoom_level]}%")
+        self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
