@@ -5,9 +5,9 @@ import sys
 
 import ui_single_banner_designer
 import PatternSelector
-import AdaptiveManager
-import pattern
-import utils
+import utils.AdaptiveManager as AdaptiveManager
+import utils.pattern as pattern
+import utils.tools as tools
 from collections import deque
 
 class BannerDisplayer(QWidget):
@@ -194,7 +194,7 @@ class SingleBannerDesigner(QWidget):
         b = self.GetBanner()
         b.append(pattern)
         b.append(0)
-        b = utils.ListToStrBanner(b)
+        b = tools.ListToStrBanner(b)
         self.operation_history_deque.append(b)
         self.operation_redo_deque.clear()
         self.LoadBanner(b)
@@ -204,7 +204,7 @@ class SingleBannerDesigner(QWidget):
         b = self.GetBanner()
         if len(b) > 1:
             b[2*self.pattern_len] = color
-            b = utils.ListToStrBanner(b)
+            b = tools.ListToStrBanner(b)
             self.operation_history_deque.append(b)
             self.operation_redo_deque.clear()
             self.LoadBanner(b)
@@ -216,7 +216,7 @@ class SingleBannerDesigner(QWidget):
             if id != 0:
                 b = self.GetBanner()
                 b[2*id-1], b[2*id], b[2*id+1], b[2*id+2] = b[2*id+1], b[2*id+2], b[2*id-1], b[2*id]
-                b = utils.ListToStrBanner(b)
+                b = tools.ListToStrBanner(b)
                 self.operation_history_deque.append(b)
                 self.operation_redo_deque.clear()
                 self.LoadBanner(b)
@@ -225,7 +225,7 @@ class SingleBannerDesigner(QWidget):
             if id != self.pattern_len - 1:
                 b = self.GetBanner()
                 b[2*id+1], b[2*id+2], b[2*id+3], b[2*id+4] = b[2*id+3], b[2*id+4], b[2*id+1], b[2*id+2]
-                b = utils.ListToStrBanner(b)
+                b = tools.ListToStrBanner(b)
                 self.operation_history_deque.append(b)
                 self.operation_redo_deque.clear()
                 self.LoadBanner(b)
@@ -233,7 +233,7 @@ class SingleBannerDesigner(QWidget):
             # 删除对应id
             b = self.GetBanner()
             del b[2*id+1:2*id+3]
-            b = utils.ListToStrBanner(b)
+            b = tools.ListToStrBanner(b)
             self.operation_history_deque.append(b)
             self.operation_redo_deque.clear()
             self.LoadBanner(b)
@@ -243,18 +243,18 @@ class SingleBannerDesigner(QWidget):
         b = self.GetBanner()
         for i in range(self.pattern_len):
             b[2*i+1] = pattern.horizonal_flip_pair[b[2*i+1]]
-        self.LoadBanner(utils.ListToStrBanner(b))
+        self.LoadBanner(tools.ListToStrBanner(b))
 
     def VerticalFlip(self):
         '''垂直翻转'''
         b = self.GetBanner()
         for i in range(self.pattern_len):
             b[2*i+1] = pattern.vertical_flip_pair[b[2*i+1]]
-        self.LoadBanner(utils.ListToStrBanner(b))
+        self.LoadBanner(tools.ListToStrBanner(b))
 
     def ClearPattern(self):
         '''清空图案'''
-        b = utils.ListToStrBanner([self.GetBanner()[0]])
+        b = tools.ListToStrBanner([self.GetBanner()[0]])
         self.operation_history_deque.append(b)
         self.operation_redo_deque.clear()
         self.LoadBanner(b)
@@ -282,7 +282,7 @@ class SingleBannerDesigner(QWidget):
                 self.operation_redo_deque.clear()
             
             # 单旗帜表示
-            self.pattern_len, splited = utils.StrBannerToList(str_banner)
+            self.pattern_len, splited = tools.StrBannerToList(str_banner)
             
             # 阻塞信号，避免不必要的触发
             self.ui.BannerColorComboBox.blockSignals(True)
@@ -350,7 +350,7 @@ class SingleBannerDesigner(QWidget):
             patterns_data.append(self.ui.PatternVLayout.itemAt(i).widget().button_group.checkedId())
             patterns_data.append(self.ui.PatternVLayout.itemAt(i).widget().ui.ColorComboBox.currentIndex())
         if isStr:
-            return utils.ListToStrBanner(patterns_data)
+            return tools.ListToStrBanner(patterns_data)
         else:
             return patterns_data
         

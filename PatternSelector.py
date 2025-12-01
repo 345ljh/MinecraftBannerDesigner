@@ -6,8 +6,8 @@ import sys
 import cv2
 
 import ui_pattern_selector
-import pattern
-import AdaptiveManager
+import utils.AdaptiveManager as AdaptiveManager
+import utils.pattern as pattern
 
 
 class PatternSelector(QWidget):

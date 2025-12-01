@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence
 import sys, os
 import PIL
-import pattern
-import DataStorage
+import utils.pattern as pattern
+import utils.DataStorage as DataStorage
 
 # 显示完整的设计, widget大小理论上无限
 # 该widget不应被直接调用

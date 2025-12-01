@@ -2,11 +2,11 @@ from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScr
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
 import sys, os
-import pattern
 
 import ui_toolbox
-import AdaptiveManager
-import DataStorage
+import utils.AdaptiveManager as AdaptiveManager
+import utils.pattern as pattern
+import utils.DataStorage as DataStorage
 
 zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
 

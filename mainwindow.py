@@ -6,9 +6,9 @@ import sys, os, psutil
 import PIL
 
 import ToolBox, SingleBannerDesigner, DesignPreviewer
-import AdaptiveManager
-import pattern
-import DataStorage
+import utils.AdaptiveManager as AdaptiveManager
+import utils.pattern as pattern
+import utils.DataStorage as DataStorage
 
 class MainWindow(QWidget):
     # 窗口组件本身不存储数据, 数据通过DataStorage单例进行共享
