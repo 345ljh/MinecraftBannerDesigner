@@ -189,16 +189,26 @@ class SingleBannerDesigner(QWidget):
         self.operation_redo_deque.clear()
         self.LoadBanner(b)
 
-    def AddPattern(self):
+    def AddPattern(self, pattern=0):
         '''添加图案'''
         b = self.GetBanner()
-        b.append(0)
+        b.append(pattern)
         b.append(0)
         b = utils.ListToStrBanner(b)
         self.operation_history_deque.append(b)
         self.operation_redo_deque.clear()
         self.LoadBanner(b)
     
+    def SetLastPatternColor(self, color: int):
+        '''设置最后一个图案颜色'''
+        b = self.GetBanner()
+        if len(b) > 1:
+            b[2*self.pattern_len] = color
+            b = utils.ListToStrBanner(b)
+            self.operation_history_deque.append(b)
+            self.operation_redo_deque.clear()
+            self.LoadBanner(b)
+
     def OperatePattern(self, id: int, operation: int):
         '''图案顺序调整或删除'''
         if operation == 0:

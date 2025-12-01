@@ -33,6 +33,26 @@ type = [
     "cre", "sku", "moj", "glb", "pig"
 ]
 
+# 多键操作添加非空图案
+multi_operation = [
+    "none", "zzz", "ccc", "qqq", "eee", "zxc",
+    "qwe", "qaz", "edc", "wsx", "asd", "qsc",
+    "esz", "wswsw", "qcez", "adwx", "zscz", "qesq",
+    "azscd", "aqsed", "qezq", "czec", "zqez", "ecqe",
+    "sss", "awdxa", "qwxzq", "qedaq", "wecxw", "adcza",
+    "qeczq", "qezc", "wwwx", "xxxw", "wssx", "swdxa",
+    "qezsc", "wacdz", "edazc", "wdcza", "adada"
+]
+# 依次判断multi_operation是否一个字符串是另一个子串
+def moj():
+    for i in range(len(multi_operation)):
+        for j in range(len(multi_operation)):
+            if i == j:
+                continue
+            if multi_operation[i] in multi_operation[j]:
+                print(multi_operation[i], multi_operation[j])
+# moj()
+
 # 水平翻转对应组合
 horizonal_flip_pair = [
 0, 2, 1, 4, 3, 5, 
