@@ -11,7 +11,7 @@ import utils.DataStorage as DataStorage
 zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
 
 class ToolBox(QWidget):
-    LoadDesign = pyqtSignal(str)  # design名称
+    LoadDesign = pyqtSignal()
     UpdateZoom = pyqtSignal(float, bool)  # zoom_factor, real_margin
 
     def __init__(self):
@@ -38,6 +38,8 @@ class ToolBox(QWidget):
         self.ui.ViewZoomUpButton.clicked.connect(lambda: self.SetZoom(ZoomUp=True))
         self.ui.ViewZoomDownButton.clicked.connect(lambda: self.SetZoom(ZoomUp=False))
         self.ui.ViewPaddingCheckBox.clicked.connect(lambda: self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked()))
+        self.ui.UtilsGenCommandButton.clicked.connect(self.GenerateCommand)
+        self.ui.UtilsDyeCalcButton.clicked.connect(self.CalculateDesignDye)
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
@@ -117,13 +119,26 @@ class ToolBox(QWidget):
             c = DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][1]
             self.ui.DesignRowSpinBox.setValue(r)  # 加载行数
             self.ui.DesignColumnSpinBox.setValue(c)  # 加载列数
-            self.LoadDesign.emit(self.ui.DesignSelectComboBox.currentText())
+
+            design = DataStorage.get_instance().designs[DataStorage.get_instance().current_design_name]
+            patterns_data = {}
+            for banner in design[2]:
+                b = banner.split(":", 2)
+                key = b[0] + ":" + b[1]
+                patterns_data[key] = b[2]
+            DataStorage.get_instance().current_design_patterns = patterns_data
+            DataStorage.get_instance().current_design_size = [r,c]
+            DataStorage.get_instance().banner_pos = [1,0]
+
+            self.LoadDesign.emit()
 
     def ChangeDesignSize(self):
         if self.ui.DesignSelectComboBox.currentText():
             DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][0] = self.ui.DesignRowSpinBox.value()
             DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][1] = self.ui.DesignColumnSpinBox.value()
-            self.LoadDesign.emit(self.ui.DesignSelectComboBox.currentText())
+            DataStorage.get_instance().current_design_size = [DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][0],
+                                                              DataStorage.get_instance().designs[self.ui.DesignSelectComboBox.currentText()][1]]
+            self.LoadDesign.emit()
             
     def SearchDesign(self):
         '''匹配搜索'''
@@ -171,6 +186,95 @@ class ToolBox(QWidget):
                 DataStorage.get_instance().zoom_level -= 1
         self.ui.ViewZoomLabel.setText(f"缩放: {zoom_level_to_factor[DataStorage.get_instance().zoom_level]}%")
         self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked())
+
+    def GenerateCommand(self):
+        '''生成指令'''
+        command = ""
+        generated_num = 0
+
+        for i in range(DataStorage.get_instance().current_design_size[0] - 1):
+            _i = DataStorage.get_instance().current_design_size[0] - i - 1
+            for j in range(DataStorage.get_instance().current_design_size[1] - 1):
+                # 旗帜属性    
+                if f"{_i}:{j}" not in DataStorage.get_instance().current_design_patterns:
+                    continue
+                now_banner = DataStorage.get_instance().current_design_patterns[f"{_i}:{j}"].split(":")
+
+                if now_banner[0] != "16":
+                    if generated_num % 27 == 0:
+                        # 指令前缀, 缩进似乎会影响指令执行, 因此不缩进不换行
+                        command += f'''/give @p minecraft:chest{{display: {{Name: '{{"text":"{DataStorage.get_instance().current_design_name}","color":"gold"}}'}},BlockEntityTag:{{Items:['''
+
+                    command += f'''{{Slot:{generated_num % 27}b,id:"minecraft:{pattern.color_name[int(now_banner[0])]}_banner",Count:1b,tag:{{display: {{Name: '{{"text":"{_i}_{j}"}}'}},'''
+
+                    # 判断是否需要添加图案
+                    if not all(x == '0' for x in now_banner[1::2]):
+
+                        command += f'''BlockEntityTag:{{Patterns:['''
+
+                        for k in range(pattern.MAX_BANNER):
+                            try:
+                                if int(now_banner[2 * k + 1]) != 0:
+                                    command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
+                            except IndexError:
+                                pass
+                        command += f"]}}"
+
+                    command += f'''}}}},'''
+
+                    if generated_num % 27 == 26:
+                        # 指令后缀
+                        command += f''']}}}}
+                        ___________________________
+                        '''
+
+                    generated_num += 1
+        
+        if generated_num % 27 != 0:
+            # 指令后缀
+            command += f''']}}}}
+            ___________________________
+            '''
+        # 复制剪贴板
+        app = QApplication.instance()
+        if not app:
+            app = QApplication(sys.argv)
+        
+        clipboard = app.clipboard()
+        clipboard.setText(command)
+        QMessageBox.information(self, '生成成功！', f'已复制指令到剪贴板，共{(generated_num - 1) // 27 + 1}条')
+
+    def CalculateDesignDye(self):
+        dye = [0] * 16
+        for key in DataStorage.get_instance().current_design_patterns:
+            banner = [int(i) for i in DataStorage.get_instance().current_design_patterns[key].split(":")]
+            if banner[0] == 16:
+                continue
+            dye[banner[0]] += 6
+            for idx in range((len(banner) - 1) // 2):
+                if banner[2 * idx + 1] != 0:
+                    dye[banner[2 * idx + 2]] += 1
+        msg = QMessageBox()
+        msg.setWindowTitle("染料计算")
+
+        htm_str = ""
+        for i in range(16):
+            htm_str += f'''
+            <p>{str(dye[i])}</p>
+            <img src="images/dyes/{str(i)}.png" width="26" height="26">
+            '''
+        
+        # 1132*52
+        html_content = f"""
+        <div style="text-align:center">
+            <p>{htm_str}</p>
+            <p>适用18w43a/1.14以上版本</p>
+        </div>
+        """
+        msg.setText(html_content)
+        msg.exec_()
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

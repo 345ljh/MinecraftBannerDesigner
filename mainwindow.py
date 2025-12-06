@@ -85,6 +85,10 @@ class MainWindow(QWidget):
         self.shortcut_openfile.activated.connect(self.toolbox.OpenFile)
         self.shortcut_savefile = QShortcut(QKeySequence("Ctrl+Shift+S"), self)  # 保存文件
         self.shortcut_savefile.activated.connect(self.toolbox.SaveFile)
+        self.shortcut_gencommand = QShortcut(QKeySequence("Ctrl+Shift+C"), self)  # 生成指令
+        self.shortcut_gencommand.activated.connect(self.toolbox.GenerateCommand)
+        self.shortcut_caldye = QShortcut(QKeySequence("Ctrl+Shift+D"), self)  # 计算染料数量
+        self.shortcut_caldye.activated.connect(self.toolbox.CalculateDesignDye)
 
         # 多键操作
         self.multi_key_sequence = ""
@@ -97,20 +101,9 @@ class MainWindow(QWidget):
         super().resizeEvent(a0)
         self.adaptive_manager.AdaptiveResize()
 
-    def DesignDisplay(self, design_name):
-        '''加载设计并转换格式'''
-        # 原格式: [row, col, [r1:c1:banner1, ...]]
-        # 输出: {"r1:c1", banner1, ...}
-        design = DataStorage.get_instance().designs[design_name]
-        size = [design[0], design[1]]
-        patterns_data = {}
-        for banner in design[2]:
-            b = banner.split(":", 2)
-            key = b[0] + ":" + b[1]
-            patterns_data[key] = b[2]
+    def DesignDisplay(self):
+        '''渲染设计'''
         self.design_previewer.Update()
-        DataStorage.get_instance().current_design_patterns = patterns_data
-        DataStorage.get_instance().current_design_size = size
         self.LoadBanner([1, 0])
 
     def LoadBanner(self, pos=[1,0]):
