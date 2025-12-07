@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ToolBox.ui'
+# Form implementation generated from reading ui file 'toolbox.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -85,13 +85,13 @@ class Ui_ToolBox(object):
         self.ViewZoomLabel.setGeometry(QtCore.QRect(10, 320, 101, 31))
         self.ViewZoomLabel.setObjectName("ViewZoomLabel")
         self.ViewZoomUpButton = QtWidgets.QPushButton(ToolBox)
-        self.ViewZoomUpButton.setGeometry(QtCore.QRect(120, 310, 41, 41))
+        self.ViewZoomUpButton.setGeometry(QtCore.QRect(110, 310, 41, 41))
         self.ViewZoomUpButton.setObjectName("ViewZoomUpButton")
         self.ViewZoomDownButton = QtWidgets.QPushButton(ToolBox)
-        self.ViewZoomDownButton.setGeometry(QtCore.QRect(180, 310, 41, 41))
+        self.ViewZoomDownButton.setGeometry(QtCore.QRect(170, 310, 41, 41))
         self.ViewZoomDownButton.setObjectName("ViewZoomDownButton")
         self.ViewPaddingCheckBox = QtWidgets.QCheckBox(ToolBox)
-        self.ViewPaddingCheckBox.setGeometry(QtCore.QRect(250, 320, 111, 31))
+        self.ViewPaddingCheckBox.setGeometry(QtCore.QRect(220, 300, 111, 31))
         self.ViewPaddingCheckBox.setChecked(True)
         self.ViewPaddingCheckBox.setTristate(False)
         self.ViewPaddingCheckBox.setObjectName("ViewPaddingCheckBox")
@@ -111,6 +111,11 @@ class Ui_ToolBox(object):
         self.UtilsShortCutButton = QtWidgets.QPushButton(ToolBox)
         self.UtilsShortCutButton.setGeometry(QtCore.QRect(240, 400, 101, 41))
         self.UtilsShortCutButton.setObjectName("UtilsShortCutButton")
+        self.ViewRealtimeDisplayCheckBox = QtWidgets.QCheckBox(ToolBox)
+        self.ViewRealtimeDisplayCheckBox.setGeometry(QtCore.QRect(220, 330, 161, 31))
+        self.ViewRealtimeDisplayCheckBox.setChecked(True)
+        self.ViewRealtimeDisplayCheckBox.setTristate(False)
+        self.ViewRealtimeDisplayCheckBox.setObjectName("ViewRealtimeDisplayCheckBox")
 
         self.retranslateUi(ToolBox)
         QtCore.QMetaObject.connectSlotsByName(ToolBox)
@@ -146,6 +151,7 @@ class Ui_ToolBox(object):
         self.UtilsGenCommandButton.setText(_translate("ToolBox", "生成指令"))
         self.UtilsDyeCalcButton.setText(_translate("ToolBox", "染料计算"))
         self.UtilsShortCutButton.setText(_translate("ToolBox", "快捷键提示"))
+        self.ViewRealtimeDisplayCheckBox.setText(_translate("ToolBox", "开启实时渲染"))
 
 
 if __name__ == "__main__":

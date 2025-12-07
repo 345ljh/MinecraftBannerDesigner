@@ -277,7 +277,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="ViewZoomUpButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>110</x>
      <y>310</y>
      <width>41</width>
      <height>41</height>
@@ -290,7 +290,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="ViewZoomDownButton">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>170</x>
      <y>310</y>
      <width>41</width>
      <height>41</height>
@@ -303,8 +303,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QCheckBox" name="ViewPaddingCheckBox">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>320</y>
+     <x>220</x>
+     <y>300</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -377,6 +377,25 @@ li.checked::marker { content: &quot;\2612&quot;; }
    </property>
    <property name="text">
     <string>快捷键提示</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="ViewRealtimeDisplayCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>330</y>
+     <width>161</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>开启实时渲染</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="tristate">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

@@ -37,9 +37,10 @@ class ToolBox(QWidget):
         self.ui.DesignSelectButton.clicked.connect(self.SelectDesign)
         self.ui.ViewZoomUpButton.clicked.connect(lambda: self.SetZoom(ZoomUp=True))
         self.ui.ViewZoomDownButton.clicked.connect(lambda: self.SetZoom(ZoomUp=False))
-        self.ui.ViewPaddingCheckBox.clicked.connect(lambda: self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked()))
+        self.ui.ViewPaddingCheckBox.stateChanged.connect(lambda: self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked()))
         self.ui.UtilsGenCommandButton.clicked.connect(self.GenerateCommand)
         self.ui.UtilsDyeCalcButton.clicked.connect(self.CalculateDesignDye)
+        self.ui.ViewRealtimeDisplayCheckBox.stateChanged.connect(self.__setRealtimeCheckboxText)
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
@@ -52,6 +53,12 @@ class ToolBox(QWidget):
     def resizeEvent(self, a0):
         super().resizeEvent(a0)
         self.adaptive_manager.AdaptiveResize()
+
+    def __setRealtimeCheckboxText(self):
+        if self.ui.ViewRealtimeDisplayCheckBox.isChecked():
+            self.ui.ViewRealtimeDisplayCheckBox.setText("开启实时渲染")
+        else:
+            self.ui.ViewRealtimeDisplayCheckBox.setText("重新勾选后渲染")
 
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
@@ -149,6 +156,23 @@ class ToolBox(QWidget):
         self.ui.DesignSelectComboBox.clear()
         for name in DataStorage.get_instance().search_designs:
             self.ui.DesignSelectComboBox.addItem(name)
+        self.ui.DesignSelectComboBox.setFocus()
+        # 展开下拉
+        self.ui.DesignSelectComboBox.showPopup()
+
+    def UpdateFocus(self):
+        '''轮换设置聚焦 失焦-设计选择框-设计名输入框'''
+        # 判断是否聚焦以及聚焦的控件
+        f1 = self.ui.DesignSelectComboBox.hasFocus()
+        f2 = self.ui.DesignNameText.hasFocus()
+        if f1:
+            self.ui.DesignNameText.setFocus()
+            self.ui.DesignSelectComboBox.hidePopup()
+        elif f2:
+            self.ui.DesignNameText.clearFocus()
+        else:
+            self.ui.DesignSelectComboBox.setFocus()
+            self.ui.DesignSelectComboBox.showPopup()
 
     def SelectDesign(self):
         name = self.ui.DesignNameText.text()
@@ -274,7 +298,41 @@ class ToolBox(QWidget):
         msg.setText(html_content)
         msg.exec_()
 
-
+    def RowColumnOperation(self, isAdd: bool = True, isRow: bool = True, inverted: bool = False):
+        '''
+            从右或上/左或下添加/删除一行/一列
+            isAdd: true - 添加  false - 删除
+            isRow: true - 行  false - 列
+            inverted: true - 从左或下操作  false - 从右或上操作
+        '''
+        if inverted:
+            new_patterns = {}
+            for b_key in DataStorage.get_instance().current_design_patterns:
+                if isRow and isAdd:
+                    key_split = b_key.split(":")
+                    n_key = f"{int(key_split[0]) + 1}:{key_split[1]}"
+                    new_patterns[n_key] = DataStorage.get_instance().current_design_patterns[b_key]
+                elif isRow and not isAdd:
+                    key_split = b_key.split(":")
+                    if int(key_split[0]) <= 0:
+                        continue
+                    n_key = f"{int(key_split[0]) - 1}:{key_split[1]}"
+                    new_patterns[n_key] = DataStorage.get_instance().current_design_patterns[b_key]
+                elif not isRow and isAdd:
+                    key_split = b_key.split(":")
+                    n_key = f"{key_split[0]}:{int(key_split[1]) + 1}"
+                    new_patterns[n_key] = DataStorage.get_instance().current_design_patterns[b_key]
+                elif not isRow and not isAdd:
+                    key_split = b_key.split(":")
+                    if int(key_split[1]) <= 0:
+                        continue
+                    n_key = f"{key_split[0]}:{int(key_split[1]) - 1}"
+            DataStorage.get_instance().current_design_patterns = new_patterns
+        if isRow:
+            self.ui.DesignRowSpinBox.setValue(self.ui.DesignRowSpinBox.value() + 1 if isAdd else self.ui.DesignRowSpinBox.value() - 1)
+        else:
+            self.ui.DesignColumnSpinBox.setValue(self.ui.DesignColumnSpinBox.value() + 1 if isAdd else self.ui.DesignColumnSpinBox.value() - 1)
+        self.SaveCurrentDesign()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

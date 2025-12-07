@@ -34,6 +34,7 @@ class MainWindow(QWidget):
         self.toolbox.UpdateZoom.connect(self.design_previewer.SetZoomFactor)
         self.design_previewer.onBannerClicked.connect(self.LoadBanner)
         self.single_banner_designer.BannerUpdated.connect(self.SetBanner)
+        self.toolbox.ui.ViewRealtimeDisplayCheckBox.stateChanged.connect(self.SetRealtimeDisplay)
 
         self.adaptive_components = [
             self.design_previewer, self.single_banner_designer, self.toolbox
@@ -47,8 +48,6 @@ class MainWindow(QWidget):
         self.shortcut_vertialflip.activated.connect(self.single_banner_designer.VerticalFlip)
         self.shortcut_addpattern = QShortcut(QKeySequence("Shift+="), self)  # 添加空图案
         self.shortcut_addpattern.activated.connect(self.single_banner_designer.AddPattern)
-        self.shortcut_addpattern2 = QShortcut(QKeySequence("Ctrl+="), self)
-        self.shortcut_addpattern2.activated.connect(self.single_banner_designer.AddPattern)
         self.shortcut_clearpattern = QShortcut(QKeySequence("Delete"), self)  # 清除所有图案
         self.shortcut_clearpattern.activated.connect(self.single_banner_designer.ClearPattern)
         self.shortcut_deletelastpattern = QShortcut(QKeySequence("Backspace"), self)  # 删除最后一个图案
@@ -79,8 +78,14 @@ class MainWindow(QWidget):
         self.shortcut_leftbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0], DataStorage.get_instance().banner_pos[1] - 1]))
         self.shortcut_rightbanner = QShortcut(QKeySequence("Right"), self)  # 选择右方banner
         self.shortcut_rightbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0], DataStorage.get_instance().banner_pos[1] + 1]))
+        self.shortcut_zoomup = QShortcut(QKeySequence("Ctrl+="), self)  # 放大
+        self.shortcut_zoomup.activated.connect(lambda: self.toolbox.SetZoom(True))
+        self.shortcut_zoomdown = QShortcut(QKeySequence("Ctrl+-"), self)  # 缩小
+        self.shortcut_zoomdown.activated.connect(lambda: self.toolbox.SetZoom(False))
         self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+Shift+N"), self)  # 选择/新建设计
         self.shortcut_new_design.activated.connect(self.toolbox.SelectDesign)
+        self.shortcut_search_design = QShortcut(QKeySequence("Ctrl+Shift+F"), self)  # 搜索设计
+        self.shortcut_search_design.activated.connect(self.toolbox.SearchDesign)
         self.shortcut_openfile = QShortcut(QKeySequence("Ctrl+Shift+O"), self)  # 打开文件
         self.shortcut_openfile.activated.connect(self.toolbox.OpenFile)
         self.shortcut_savefile = QShortcut(QKeySequence("Ctrl+Shift+S"), self)  # 保存文件
@@ -89,6 +94,18 @@ class MainWindow(QWidget):
         self.shortcut_gencommand.activated.connect(self.toolbox.GenerateCommand)
         self.shortcut_caldye = QShortcut(QKeySequence("Ctrl+Shift+D"), self)  # 计算染料数量
         self.shortcut_caldye.activated.connect(self.toolbox.CalculateDesignDye)
+        self.shortcut_focus_design_name = QShortcut(QKeySequence("Tab"), self)   # 将输入光标移动到下一个输入框
+        self.shortcut_focus_design_name.activated.connect(self.toolbox.UpdateFocus)
+        self.shortcut_padding_checkbox = QShortcut(QKeySequence("Shift+P"), self)   # 真实间隔选项开启/关闭
+        self.shortcut_padding_checkbox.activated.connect(lambda: self.toolbox.ui.ViewPaddingCheckBox.setChecked(not self.toolbox.ui.ViewPaddingCheckBox.isChecked()))
+        self.shortcut_realtime_checkbox = QShortcut(QKeySequence("Shift+D"), self)   # 实时渲染示选项开启/关闭
+        self.shortcut_realtime_checkbox.activated.connect(lambda: self.toolbox.ui.ViewRealtimeDisplayCheckBox.setChecked(not self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked()))
+        rowcol_operation = [["Ctrl+Up", True, True, False], ["Ctrl+Down", False, True, False], ["Ctrl+Left", True, False, False], ["Ctrl+Right", False, False, False],
+                     ["Shift+Up", True, True, True], ["Shift+Down", False, True, True], ["Shift+Left", True, False, True], ["Shift+Right", False, False, True]]
+        self.shortcut_rowcol_operation = [QShortcut(QKeySequence(f"{rc[0]}"), self)  # 行列增删
+                                    for rc in rowcol_operation]
+        for i, shortcut in enumerate(self.shortcut_rowcol_operation):
+            shortcut.activated.connect(lambda idx=i: self.toolbox.RowColumnOperation(*rowcol_operation[idx][1:]))
 
         # 多键操作
         self.multi_key_sequence = ""
@@ -102,7 +119,7 @@ class MainWindow(QWidget):
         self.adaptive_manager.AdaptiveResize()
 
     def DesignDisplay(self):
-        '''渲染设计'''
+        '''渲染加载的设计'''
         self.design_previewer.Update()
         self.LoadBanner([1, 0])
 
@@ -118,9 +135,16 @@ class MainWindow(QWidget):
             b = pd[f"{pos[0]}:{pos[1]}"]
         else:
             b = "16"
-        self.design_previewer.SetEditBannerPosition(pos)
+        if self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked():
+            self.design_previewer.SetEditBannerPosition(pos)
         DataStorage.get_instance().banner_pos = pos
         self.single_banner_designer.LoadBanner(b, isNew=True)
+
+    def SetRealtimeDisplay(self):
+        if self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked():
+            self.design_previewer.SetEditBannerPosition(DataStorage.get_instance().banner_pos)
+        else:
+            self.design_previewer.SetEditBannerPosition([-1, -1])
 
     def SetBanner(self):
         '''singleDesigner更新banner后, 更新design_previewer和toolbox'''
@@ -128,7 +152,8 @@ class MainWindow(QWidget):
         pos = DataStorage.get_instance().banner_pos
         DataStorage.get_instance().current_design_patterns[f"{pos[0]}:{pos[1]}"] = b
         self.toolbox.SaveCurrentDesign()
-        self.design_previewer.Update()
+        if self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked():
+            self.design_previewer.Update()
 
     def MultiKey(self, key):
         '''多键操作, 一组键长度最大为5'''
