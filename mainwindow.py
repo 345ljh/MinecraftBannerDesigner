@@ -82,9 +82,9 @@ class MainWindow(QWidget):
         self.shortcut_zoomup.activated.connect(lambda: self.toolbox.SetZoom(True))
         self.shortcut_zoomdown = QShortcut(QKeySequence("Ctrl+-"), self)  # 缩小
         self.shortcut_zoomdown.activated.connect(lambda: self.toolbox.SetZoom(False))
-        self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+Shift+N"), self)  # 选择/新建设计
+        self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+N"), self)  # 选择/新建设计
         self.shortcut_new_design.activated.connect(self.toolbox.SelectDesign)
-        self.shortcut_search_design = QShortcut(QKeySequence("Ctrl+Shift+F"), self)  # 搜索设计
+        self.shortcut_search_design = QShortcut(QKeySequence("Ctrl+F"), self)  # 搜索设计
         self.shortcut_search_design.activated.connect(self.toolbox.SearchDesign)
         self.shortcut_openfile = QShortcut(QKeySequence("Ctrl+Shift+O"), self)  # 打开文件
         self.shortcut_openfile.activated.connect(self.toolbox.OpenFile)
@@ -100,8 +100,8 @@ class MainWindow(QWidget):
         self.shortcut_padding_checkbox.activated.connect(lambda: self.toolbox.ui.ViewPaddingCheckBox.setChecked(not self.toolbox.ui.ViewPaddingCheckBox.isChecked()))
         self.shortcut_realtime_checkbox = QShortcut(QKeySequence("Shift+D"), self)   # 实时渲染示选项开启/关闭
         self.shortcut_realtime_checkbox.activated.connect(lambda: self.toolbox.ui.ViewRealtimeDisplayCheckBox.setChecked(not self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked()))
-        rowcol_operation = [["Ctrl+Up", True, True, False], ["Ctrl+Down", False, True, False], ["Ctrl+Left", True, False, False], ["Ctrl+Right", False, False, False],
-                     ["Shift+Up", True, True, True], ["Shift+Down", False, True, True], ["Shift+Left", True, False, True], ["Shift+Right", False, False, True]]
+        rowcol_operation = [["Ctrl+Up", True, True, False], ["Ctrl+Down", False, True, False], ["Ctrl+Left", False, False, False], ["Ctrl+Right", True, False, False],
+                     ["Shift+Up", True, True, True], ["Shift+Down", False, True, True], ["Shift+Left", False, False, True], ["Shift+Right", True, False, True]]
         self.shortcut_rowcol_operation = [QShortcut(QKeySequence(f"{rc[0]}"), self)  # 行列增删
                                     for rc in rowcol_operation]
         for i, shortcut in enumerate(self.shortcut_rowcol_operation):

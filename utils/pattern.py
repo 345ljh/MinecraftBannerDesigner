@@ -38,7 +38,7 @@ multi_operation = [
     "none", "zzz", "ccc", "qqq", "eee", "zxc",
     "qwe", "qaz", "edc", "wsx", "asd", "qsc",
     "esz", "wswsw", "qcez", "adwx", "zscz", "qesq",
-    "azscd", "aqsed", "qezq", "czec", "zqez", "ecqe",
+    "azscd", "aqsed", "qezq", "czec", "zqcz", "ecqe",
     "sss", "awdxa", "qwxzq", "qedaq", "wecxw", "adcza",
     "qeczq", "qezc", "wwwx", "xxxw", "wssx", "swdxa",
     "qezsc", "wacdz", "edazc", "wdcza", "adada"
