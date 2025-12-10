@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence
+from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence, QIcon
 import sys, os, psutil
 import PIL
 
@@ -15,6 +15,9 @@ class MainWindow(QWidget):
     # mainwindow负责连接与调用其他组件
     def __init__(self):
         super().__init__()
+
+        self.setWindowTitle("Minecraft Banner Designer V2.0")
+        self.setWindowIcon(QIcon("images/icon.png"))
 
         self.resize(1800, 900)
         self.design_previewer = DesignPreviewer.DesignPreviewer()
@@ -58,7 +61,7 @@ class MainWindow(QWidget):
         self.shortcut_paste.activated.connect(self.single_banner_designer.PastePattern)
         self.shortcut_undo = QShortcut(QKeySequence("Ctrl+Z"), self)  # 撤销
         self.shortcut_undo.activated.connect(self.single_banner_designer.Undo)
-        self.shortcut_redo = QShortcut(QKeySequence("Ctrl+Y"), self)  # 重做
+        self.shortcut_redo = QShortcut(QKeySequence("Ctrl+X"), self)  # 重做
         self.shortcut_redo.activated.connect(self.single_banner_designer.Redo)
         self.shortcut_savebanner = QShortcut(QKeySequence("Ctrl+S"), self)  # 保存当前banner
         self.shortcut_savebanner.activated.connect(self.single_banner_designer.UpdateBanner)

@@ -218,7 +218,7 @@ class ToolBox(QWidget):
 
         for i in range(DataStorage.get_instance().current_design_size[0] - 1):
             _i = DataStorage.get_instance().current_design_size[0] - i - 1
-            for j in range(DataStorage.get_instance().current_design_size[1] - 1):
+            for j in range(DataStorage.get_instance().current_design_size[1]):
                 # 旗帜属性    
                 if f"{_i}:{j}" not in DataStorage.get_instance().current_design_patterns:
                     continue

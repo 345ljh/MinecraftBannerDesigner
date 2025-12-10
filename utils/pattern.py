@@ -80,7 +80,7 @@ icon = {}
 def getIcon(n = ""):
     if icon == {}:
         for name in type:
-            image = cv2.imread("images/icons/" + name + ".png", cv2.IMREAD_UNCHANGED)
+            image = cv2.imread("images/patterns/" + name + ".png", cv2.IMREAD_UNCHANGED)
             # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)[1:21, 1:21]
             image = image[1:41, 1:21, 3]
             icon[name] = image
