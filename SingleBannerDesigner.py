@@ -189,10 +189,10 @@ class SingleBannerDesigner(QWidget):
         self.operation_redo_deque.clear()
         self.LoadBanner(b)
 
-    def AddPattern(self, pattern=0):
+    def AddPattern(self, pattern: int=0):
         '''添加图案'''
         b = self.GetBanner()
-        b.append(pattern)
+        b.append(int(pattern))
         b.append(0)
         b = tools.ListToStrBanner(b)
         self.operation_history_deque.append(b)

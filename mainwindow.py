@@ -15,6 +15,7 @@ class MainWindow(QWidget):
     # mainwindow负责连接与调用其他组件
     def __init__(self):
         super().__init__()
+        self.__setupStyles()
 
         self.setWindowTitle("Minecraft Banner Designer V2.0")
         self.setWindowIcon(QIcon("images/icon.png"))
@@ -120,6 +121,12 @@ class MainWindow(QWidget):
     def resizeEvent(self, a0):
         super().resizeEvent(a0)
         self.adaptive_manager.AdaptiveResize()
+
+    def __setupStyles(self):
+        """统一设置应用样式表"""
+        import utils.stylesheet
+        # 应用样式表到整个应用
+        self.setStyleSheet(utils.stylesheet.style_sheet)
 
     def DesignDisplay(self):
         '''渲染加载的设计'''
