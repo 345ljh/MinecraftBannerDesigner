@@ -18,10 +18,11 @@ color = {
     "brown": [142, 91,54],
     "green": [101, 134, 24],
     "red": [191, 50, 40],
-    "black": [30, 30, 30]
+    "black": [30, 30, 30],
+    "none": [255, 255, 255]
 }
 
-color_name = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"]
+color_name = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black", "none"]
 
 type = [
     "no", "bl", "br", "tl", "tr", "bs", 

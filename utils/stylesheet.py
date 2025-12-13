@@ -195,32 +195,44 @@ QScrollArea QWidget {
     background-color: #c6c6c6;
 }
 
-/* 滚动条 */
+/* 滚动条 - 隐藏所有箭头按钮 */
 QScrollBar:vertical, QScrollBar:horizontal {
     background-color: #5a5a5a;
     border: 2px solid #4a4a4a;
     border-radius: 0px;
 }
 
-QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+/* 隐藏所有箭头按钮和区域 */
+QScrollBar::add-line, QScrollBar::sub-line {
+    border: none;
+    background: none;
+    width: 0px;
+    height: 0px;
+}
+
+/* 确保滑块有最小尺寸以便点击 */
+QScrollBar::handle:vertical {
     background-color: #727272;
     border: 2px solid;
     border-top-color: #9a9a9a;
     border-left-color: #9a9a9a;
     border-right-color: #5a5a5a;
     border-bottom-color: #5a5a5a;
-    min-height: 20px;
-    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #727272;
+    border: 2px solid;
+    border-top-color: #9a9a9a;
+    border-left-color: #9a9a9a;
+    border-right-color: #5a5a5a;
+    border-bottom-color: #5a5a5a;
 }
 
 QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
     background-color: #828282;
 }
 
-QScrollBar::add-line, QScrollBar::sub-line {
-    border: none;
-    background: none;
-}
 
 /* spinbox */
 QSpinBox {

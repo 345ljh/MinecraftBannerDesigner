@@ -41,11 +41,15 @@ class ToolBox(QWidget):
         self.ui.UtilsGenCommandButton.clicked.connect(self.GenerateCommand)
         self.ui.UtilsDyeCalcButton.clicked.connect(self.CalculateDesignDye)
         self.ui.ViewRealtimeDisplayCheckBox.stateChanged.connect(self.__setRealtimeCheckboxText)
+        self.ui.ViewBackgroundRedSchollbar.valueChanged.connect(self.SetBackgroundColor)
+        self.ui.ViewBackgroundGreenSchollbar.valueChanged.connect(self.SetBackgroundColor)
+        self.ui.ViewBackgroundBlueSchollbar.valueChanged.connect(self.SetBackgroundColor)
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
             self.ui.DesignLabel, self.ui.DesignNameHintLabel, self.ui.DesignNameText, self.ui.DesignSelectHintLabel, self.ui.DesignSelectComboBox, self.ui.DesignSearchButton, self.ui.DesignSelectButton, self.ui.DesignRowHintLabel, self.ui.DesignRowSpinBox, self.ui.DesignColumnHintLabel, self.ui.DesignColumnSpinBox,
             self.ui.ViewLabel, self.ui.ViewPaddingCheckBox, self.ui.ViewZoomLabel, self.ui.ViewZoomUpButton, self.ui.ViewZoomDownButton, self.ui.ViewRealtimeDisplayCheckBox,
+            self.ui.ViewBackgroundColorLabel, self.ui.ViewBackgroundRedSchollbar, self.ui.ViewBackgroundGreenSchollbar, self.ui.ViewBackgroundBlueSchollbar,
             self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
@@ -210,6 +214,17 @@ class ToolBox(QWidget):
                 DataStorage.get_instance().zoom_level -= 1
         self.ui.ViewZoomLabel.setText(f"缩放: {zoom_level_to_factor[DataStorage.get_instance().zoom_level]}%")
         self.UpdateZoom.emit(zoom_level_to_factor[DataStorage.get_instance().zoom_level] / 100, self.ui.ViewPaddingCheckBox.isChecked())
+
+    def SetBackgroundColor(self):
+            DataStorage.get_instance().background_color = [self.ui.ViewBackgroundRedSchollbar.value(), 
+                                                           self.ui.ViewBackgroundGreenSchollbar.value(), 
+                                                           self.ui.ViewBackgroundBlueSchollbar.value()]
+            
+    def SetDefaultBackgroundColor(self, color_id: int):
+        '''设置旗帜库中颜色作为背景'''
+        self.ui.ViewBackgroundRedSchollbar.setValue(pattern.color[pattern.color_name[color_id]][0])
+        self.ui.ViewBackgroundGreenSchollbar.setValue(pattern.color[pattern.color_name[color_id]][1])
+        self.ui.ViewBackgroundBlueSchollbar.setValue(pattern.color[pattern.color_name[color_id]][2])
 
     def GenerateCommand(self):
         '''生成指令'''

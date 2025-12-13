@@ -14,6 +14,7 @@ class DataStorage:
         self.current_design_patterns = {}  #  dict{'r:c': 'b:p:c:p:c:...', ...}
         self.zoom_level = 7  # 缩放等级, 对应100%
         self.banner_pos = [1, 0]  # 当前点击的banner的行列数
+        self.background_color = [255, 255, 255]  # 背景颜色
 
 def get_instance():
     """获取单例实例的全局函数"""

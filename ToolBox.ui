@@ -323,7 +323,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>360</y>
+     <y>470</y>
      <width>311</width>
      <height>31</height>
     </rect>
@@ -344,7 +344,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>400</y>
+     <y>510</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -357,7 +357,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>400</y>
+     <y>510</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -370,7 +370,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>400</y>
+     <y>510</y>
      <width>101</width>
      <height>41</height>
     </rect>
@@ -396,6 +396,112 @@ li.checked::marker { content: &quot;\2612&quot;; }
    </property>
    <property name="tristate">
     <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ViewBackgroundColorLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>350</y>
+     <width>141</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>设置背景颜色</string>
+   </property>
+  </widget>
+  <widget class="QScrollBar" name="ViewBackgroundRedSchollbar">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>380</y>
+     <width>361</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #ff0000;</string>
+   </property>
+   <property name="maximum">
+    <number>255</number>
+   </property>
+   <property name="pageStep">
+    <number>16</number>
+   </property>
+   <property name="value">
+    <number>255</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="invertedAppearance">
+    <bool>false</bool>
+   </property>
+   <property name="invertedControls">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QScrollBar" name="ViewBackgroundGreenSchollbar">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>410</y>
+     <width>361</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #00ff00;</string>
+   </property>
+   <property name="maximum">
+    <number>255</number>
+   </property>
+   <property name="pageStep">
+    <number>16</number>
+   </property>
+   <property name="value">
+    <number>255</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="invertedAppearance">
+    <bool>false</bool>
+   </property>
+   <property name="invertedControls">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QScrollBar" name="ViewBackgroundBlueSchollbar">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>440</y>
+     <width>361</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #0000ff;</string>
+   </property>
+   <property name="maximum">
+    <number>255</number>
+   </property>
+   <property name="pageStep">
+    <number>16</number>
+   </property>
+   <property name="value">
+    <number>255</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="invertedAppearance">
+    <bool>false</bool>
+   </property>
+   <property name="invertedControls">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

@@ -74,6 +74,10 @@ class MainWindow(QWidget):
                                     for key in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'T', 'Y', 'U', 'I', 'O', 'P']]
         for i, shortcut in enumerate(self.shortcut_patterncolor):
             shortcut.activated.connect(lambda idx=i: self.single_banner_designer.SetLastPatternColor(idx))
+        self.shortcut_backgroundcolor = [QShortcut(QKeySequence(f"Shift+{key}"), self)  # 设置背景颜色
+                                    for key in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'T', 'Y', 'U', 'I', 'O', 'P', 'del']]
+        for i, shortcut in enumerate(self.shortcut_backgroundcolor):
+            shortcut.activated.connect(lambda idx=i: self.toolbox.SetDefaultBackgroundColor(idx))
         self.shortcut_upbanner = QShortcut(QKeySequence("Up"), self)  # 选择上方banner
         self.shortcut_upbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0] + 1, DataStorage.get_instance().banner_pos[1]]))
         self.shortcut_downbanner = QShortcut(QKeySequence("Down"), self)  # 选择下方banner

@@ -49,7 +49,7 @@ class DesignPreviewerWidget(QWidget):
         painter.scale(self.zoom_factor, self.zoom_factor)  # 应用变换矩阵
             
         # 填充白色背景
-        painter.fillRect(0, 0, int(width / self.zoom_factor), int(height / self.zoom_factor), QColor(255, 255, 255))
+        painter.fillRect(0, 0, int(width / self.zoom_factor), int(height / self.zoom_factor), QColor(*DataStorage.get_instance().background_color))
             
         for row in range(1, DataStorage.get_instance().current_design_size[0]):
             for column in range(DataStorage.get_instance().current_design_size[1]):
@@ -84,7 +84,7 @@ class DesignPreviewerWidget(QWidget):
                             pass
 
         # 标注当前旗帜位置
-        painter.setPen(QPen(Qt.red, 3))
+        painter.setPen(QPen(QColor(*[255 - i for i in DataStorage.get_instance().background_color]), 3))
         painter.drawRect(int(round((self.grid_size + extra_offset_x) * self.edit_banner_pos[1] + extra_offset_x / 2, 0)),
             int(round((self.grid_size + extra_offset_y) * (DataStorage.get_instance().current_design_size[0] - self.edit_banner_pos[0] - 1), 0)),
                          round(self.grid_size), round(self.grid_size * 2))
