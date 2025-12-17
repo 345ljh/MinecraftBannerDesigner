@@ -110,14 +110,6 @@ QComboBox::drop-down {
     color: #ffffff;
 }
 
-QComboBox::down-arrow {
-    image: none;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 6px solid #3f3f3f;
-    width: 0;
-    height: 0;
-}
 
 QComboBox QAbstractItemView {
     background-color: #727272;
@@ -125,7 +117,13 @@ QComboBox QAbstractItemView {
     border: 4px solid #5a5a5a;
     selection-background-color: #404040;
     selection-color: #ffffa0;
+}
 
+QComboBox::add-line, QComboBox::sub-line {
+    border: none;
+    background: none;
+    width: 0px;
+    height: 0px;
 }
 
 /* 复选框 */

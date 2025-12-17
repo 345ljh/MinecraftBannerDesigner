@@ -7,6 +7,7 @@ import ui_toolbox
 import utils.AdaptiveManager as AdaptiveManager
 import utils.pattern as pattern
 import utils.DataStorage as DataStorage
+import utils.tools as tools
 
 zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
 
@@ -120,7 +121,9 @@ class ToolBox(QWidget):
                     design = DataStorage.get_instance().designs[name]
                     design_str = f"{name},{design[0]},{design[1]},"
                     for banner in design[2]:
-                        design_str = design_str + banner + ","
+                        _, banner_list = tools.StrBannerToList(banner)
+                        if banner_list[0] < design[0] and banner_list[1] < design[1] and banner_list[2] != 16:  # 范围外不进行保存, 精简文件
+                            design_str = design_str + banner + ","
                     f.write(f"{design_str[:-1]}\n")
 
     def DesignSelected(self):
@@ -322,26 +325,28 @@ class ToolBox(QWidget):
         '''
         if inverted:
             new_patterns = {}
+            design_copy = DataStorage.get_instance().current_design_patterns.copy()
             for b_key in DataStorage.get_instance().current_design_patterns:
                 if isRow and isAdd:
                     key_split = b_key.split(":")
                     n_key = f"{int(key_split[0]) + 1}:{key_split[1]}"
-                    new_patterns[n_key] = DataStorage.get_instance().current_design_patterns[b_key]
+                    new_patterns[n_key] = design_copy[b_key]
                 elif isRow and not isAdd:
                     key_split = b_key.split(":")
                     if int(key_split[0]) <= 0:
                         continue
                     n_key = f"{int(key_split[0]) - 1}:{key_split[1]}"
-                    new_patterns[n_key] = DataStorage.get_instance().current_design_patterns[b_key]
+                    new_patterns[n_key] = design_copy[b_key]
                 elif not isRow and isAdd:
                     key_split = b_key.split(":")
                     n_key = f"{key_split[0]}:{int(key_split[1]) + 1}"
-                    new_patterns[n_key] = DataStorage.get_instance().current_design_patterns[b_key]
+                    new_patterns[n_key] = design_copy[b_key]
                 elif not isRow and not isAdd:
                     key_split = b_key.split(":")
                     if int(key_split[1]) <= 0:
                         continue
                     n_key = f"{key_split[0]}:{int(key_split[1]) - 1}"
+                    new_patterns[n_key] = design_copy[b_key]
             DataStorage.get_instance().current_design_patterns = new_patterns
         if isRow:
             self.ui.DesignRowSpinBox.setValue(self.ui.DesignRowSpinBox.value() + 1 if isAdd else self.ui.DesignRowSpinBox.value() - 1)
