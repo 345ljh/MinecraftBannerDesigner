@@ -3,15 +3,15 @@ style_sheet = '''
 
 /* 使用@font-face加载自定义字体 */
 @font-face {
-    font-family: 'zpix';
-    src: url('zpix.ttf') format('truetype');
+    font-family: 'Zpix';
+    src: url('images/zpix.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 /* 如果没有找到zpix字体，回退到其他字体 */
 * {
-    font-family: 'zpix', 'Courier New', 'Monaco', 'Lucida Console', monospace;
+    font-family: 'Zpix', 'Courier New', 'Monaco', 'Lucida Console', monospace;
     color: #3f3f3f;
 }
 

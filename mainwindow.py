@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence, QIcon
+from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence, QIcon, QFontDatabase
 import sys, os, psutil
 import PIL
 
@@ -128,8 +128,12 @@ class MainWindow(QWidget):
 
     def __setupStyles(self):
         """统一设置应用样式表"""
-        import utils.stylesheet
+        # 加载字体
+        font_id = QFontDatabase.addApplicationFont("./images/zpix.ttf")
+        font_families = QFontDatabase.applicationFontFamilies(font_id)
+        pix_font_family = font_families[0] if font_families else "Arial"
         # 应用样式表到整个应用
+        import utils.stylesheet
         self.setStyleSheet(utils.stylesheet.style_sheet)
 
     def DesignDisplay(self):
