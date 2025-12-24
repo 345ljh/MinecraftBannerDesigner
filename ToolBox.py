@@ -8,6 +8,7 @@ import utils.AdaptiveManager as AdaptiveManager
 import utils.pattern as pattern
 import utils.DataStorage as DataStorage
 import utils.tools as tools
+import HintPlayer
 
 zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
 
@@ -45,6 +46,7 @@ class ToolBox(QWidget):
         self.ui.ViewBackgroundRedSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.ViewBackgroundGreenSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.ViewBackgroundBlueSchollbar.valueChanged.connect(self.SetBackgroundColor)
+        self.ui.UtilsShortCutButton.clicked.connect(self.__openHintPlayer)
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
@@ -64,6 +66,16 @@ class ToolBox(QWidget):
             self.ui.ViewRealtimeDisplayCheckBox.setText("开启实时渲染")
         else:
             self.ui.ViewRealtimeDisplayCheckBox.setText("重新勾选后渲染")
+
+    def __openHintPlayer(self):
+        """打开图片播放器窗口"""
+        self.hint_player = None
+        if self.hint_player is None or not self.hint_player.isVisible():
+            self.hint_player = HintPlayer.HintPlayer()
+            self.hint_player.show()
+        else:
+            self.hint_player.raise_()  # 如果窗口已存在，将其提到最前
+            self.hint_player.activateWindow()
 
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
