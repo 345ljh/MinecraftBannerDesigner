@@ -47,13 +47,14 @@ class ToolBox(QWidget):
         self.ui.ViewBackgroundGreenSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.ViewBackgroundBlueSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.UtilsShortCutButton.clicked.connect(self.__openHintPlayer)
+        self.ui.UtilsUpdateButton.clicked.connect(self.CheckUpdate)
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
             self.ui.DesignLabel, self.ui.DesignNameHintLabel, self.ui.DesignNameText, self.ui.DesignSelectHintLabel, self.ui.DesignSelectComboBox, self.ui.DesignSearchButton, self.ui.DesignSelectButton, self.ui.DesignRowHintLabel, self.ui.DesignRowSpinBox, self.ui.DesignColumnHintLabel, self.ui.DesignColumnSpinBox,
             self.ui.ViewLabel, self.ui.ViewPaddingCheckBox, self.ui.ViewZoomLabel, self.ui.ViewZoomUpButton, self.ui.ViewZoomDownButton, self.ui.ViewRealtimeDisplayCheckBox,
             self.ui.ViewBackgroundColorLabel, self.ui.ViewBackgroundRedSchollbar, self.ui.ViewBackgroundGreenSchollbar, self.ui.ViewBackgroundBlueSchollbar,
-            self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton
+            self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton, self.ui.UtilsAuthorButton, self.ui.UtilsUpdateButton,
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
         
@@ -327,6 +328,24 @@ class ToolBox(QWidget):
         """
         msg.setText(html_content)
         msg.exec_()
+
+    def CheckUpdate(self):
+        import utils.VersionController as vc
+        new_version = vc.get_version()
+        if new_version == -1:
+            QMessageBox.information(self, '检查更新失败', '请检查网络连接')
+            return
+        elif vc.current_version >= new_version:
+            QMessageBox.information(self, '检查更新', f'当前已是最新版本({new_version})')
+            return
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("检查更新")
+            msg.setText(f"当前版本: {vc.current_version}\n最新版本: {new_version}")
+            download_button = QPushButton("下载")
+            download_button.clicked.connect(vc.get_update)
+            msg.addButton(download_button, QMessageBox.YesRole)
+            msg.exec_()
 
     def RowColumnOperation(self, isAdd: bool = True, isRow: bool = True, inverted: bool = False):
         '''

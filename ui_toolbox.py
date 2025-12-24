@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Toolbox.ui'
+# Form implementation generated from reading ui file '.\ToolBox.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -149,6 +149,12 @@ class Ui_ToolBox(object):
         self.ViewBackgroundBlueSchollbar.setInvertedAppearance(False)
         self.ViewBackgroundBlueSchollbar.setInvertedControls(True)
         self.ViewBackgroundBlueSchollbar.setObjectName("ViewBackgroundBlueSchollbar")
+        self.UtilsUpdateButton = QtWidgets.QPushButton(ToolBox)
+        self.UtilsUpdateButton.setGeometry(QtCore.QRect(20, 570, 91, 41))
+        self.UtilsUpdateButton.setObjectName("UtilsUpdateButton")
+        self.UtilsAuthorButton = QtWidgets.QPushButton(ToolBox)
+        self.UtilsAuthorButton.setGeometry(QtCore.QRect(130, 570, 91, 41))
+        self.UtilsAuthorButton.setObjectName("UtilsAuthorButton")
 
         self.retranslateUi(ToolBox)
         QtCore.QMetaObject.connectSlotsByName(ToolBox)
@@ -186,6 +192,8 @@ class Ui_ToolBox(object):
         self.UtilsShortCutButton.setText(_translate("ToolBox", "快捷键提示"))
         self.ViewRealtimeDisplayCheckBox.setText(_translate("ToolBox", "开启实时渲染"))
         self.ViewBackgroundColorLabel.setText(_translate("ToolBox", "设置背景颜色"))
+        self.UtilsUpdateButton.setText(_translate("ToolBox", "检查更新"))
+        self.UtilsAuthorButton.setText(_translate("ToolBox", "关于作者"))
 
 
 if __name__ == "__main__":

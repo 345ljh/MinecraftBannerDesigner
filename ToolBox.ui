@@ -504,6 +504,32 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QPushButton" name="UtilsUpdateButton">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>570</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>检查更新</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="UtilsAuthorButton">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>570</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关于作者</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
