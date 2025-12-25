@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
+from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap, QImage, QKeySequence, QIcon, QFontDatabase
@@ -9,6 +9,8 @@ import ToolBox, SingleBannerDesigner, DesignPreviewer
 import utils.AdaptiveManager as AdaptiveManager
 import utils.pattern as pattern
 import utils.DataStorage as DataStorage
+import utils.VersionController as VersionController
+import utils.tools as tools
 
 class MainWindow(QWidget):
     # 窗口组件本身不存储数据, 数据通过DataStorage单例进行共享
@@ -17,7 +19,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.__setupStyles()
 
-        self.setWindowTitle("Minecraft Banner Designer V2.0")
+        self.setWindowTitle(f"Minecraft Banner Designer Ver.{VersionController.current_version}")
         self.setWindowIcon(QIcon("images/icon.png"))
 
         self.resize(1800, 900)
@@ -45,82 +47,123 @@ class MainWindow(QWidget):
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
 
-        # 快捷键
-        self.shortcut_horizonalflip = QShortcut(QKeySequence("H"), self)
-        self.shortcut_horizonalflip.activated.connect(self.single_banner_designer.HorizonalFlip)
-        self.shortcut_vertialflip = QShortcut(QKeySequence("V"), self)
-        self.shortcut_vertialflip.activated.connect(self.single_banner_designer.VerticalFlip)
-        self.shortcut_addpattern = QShortcut(QKeySequence("Shift+="), self)  # 添加空图案
-        self.shortcut_addpattern.activated.connect(self.single_banner_designer.AddPattern)
-        self.shortcut_clearpattern = QShortcut(QKeySequence("Delete"), self)  # 清除所有图案
-        self.shortcut_clearpattern.activated.connect(self.single_banner_designer.ClearPattern)
-        self.shortcut_deletelastpattern = QShortcut(QKeySequence("Backspace"), self)  # 删除最后一个图案
-        self.shortcut_deletelastpattern.activated.connect(lambda: self.single_banner_designer.OperatePattern(self.single_banner_designer.pattern_len - 1, 2))
-        self.shortcut_copy = QShortcut(QKeySequence("Ctrl+C"), self)  # 复制当前banner
-        self.shortcut_copy.activated.connect(self.single_banner_designer.CopyPattern)
-        self.shortcut_paste = QShortcut(QKeySequence("Ctrl+V"), self)  # 粘贴banner
-        self.shortcut_paste.activated.connect(self.single_banner_designer.PastePattern)
-        self.shortcut_undo = QShortcut(QKeySequence("Ctrl+Z"), self)  # 撤销
-        self.shortcut_undo.activated.connect(self.single_banner_designer.Undo)
-        self.shortcut_redo = QShortcut(QKeySequence("Ctrl+X"), self)  # 重做
-        self.shortcut_redo.activated.connect(self.single_banner_designer.Redo)
-        self.shortcut_savebanner = QShortcut(QKeySequence("Ctrl+S"), self)  # 保存当前banner
-        self.shortcut_savebanner.activated.connect(self.single_banner_designer.UpdateBanner)
-        self.shortcut_background = [QShortcut(QKeySequence(f"Ctrl+{key}"), self)  # 设置当前Banner背景
-                                    for key in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'T', 'Y', 'U', 'I', 'O', 'P', 'del']]
-        for i, shortcut in enumerate(self.shortcut_background):
-            shortcut.activated.connect(lambda idx=i: self.single_banner_designer.ui.BannerColorComboBox.setCurrentIndex(idx))
-        self.shortcut_patterncolor = [QShortcut(QKeySequence(f"{key}"), self)  # 设置最后一个操作的颜色
-                                    for key in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'T', 'Y', 'U', 'I', 'O', 'P']]
-        for i, shortcut in enumerate(self.shortcut_patterncolor):
-            shortcut.activated.connect(lambda idx=i: self.single_banner_designer.SetLastPatternColor(idx))
-        self.shortcut_backgroundcolor = [QShortcut(QKeySequence(f"Shift+{key}"), self)  # 设置背景颜色
-                                    for key in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'T', 'Y', 'U', 'I', 'O', 'P', 'del']]
-        for i, shortcut in enumerate(self.shortcut_backgroundcolor):
-            shortcut.activated.connect(lambda idx=i: self.toolbox.SetDefaultBackgroundColor(idx))
-        self.shortcut_upbanner = QShortcut(QKeySequence("Up"), self)  # 选择上方banner
-        self.shortcut_upbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0] + 1, DataStorage.get_instance().banner_pos[1]]))
-        self.shortcut_downbanner = QShortcut(QKeySequence("Down"), self)  # 选择下方banner
-        self.shortcut_downbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0] - 1, DataStorage.get_instance().banner_pos[1]]))
-        self.shortcut_leftbanner = QShortcut(QKeySequence("Left"), self)  # 选择左方banner
-        self.shortcut_leftbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0], DataStorage.get_instance().banner_pos[1] - 1]))
-        self.shortcut_rightbanner = QShortcut(QKeySequence("Right"), self)  # 选择右方banner
-        self.shortcut_rightbanner.activated.connect(lambda: self.LoadBanner([DataStorage.get_instance().banner_pos[0], DataStorage.get_instance().banner_pos[1] + 1]))
-        self.shortcut_zoomup = QShortcut(QKeySequence("Ctrl+="), self)  # 放大
-        self.shortcut_zoomup.activated.connect(lambda: self.toolbox.SetZoom(True))
-        self.shortcut_zoomdown = QShortcut(QKeySequence("Ctrl+-"), self)  # 缩小
-        self.shortcut_zoomdown.activated.connect(lambda: self.toolbox.SetZoom(False))
-        self.shortcut_new_design = QShortcut(QKeySequence("Ctrl+N"), self)  # 选择/新建设计
-        self.shortcut_new_design.activated.connect(self.toolbox.SelectDesign)
-        self.shortcut_search_design = QShortcut(QKeySequence("Ctrl+F"), self)  # 搜索设计
-        self.shortcut_search_design.activated.connect(self.toolbox.SearchDesign)
-        self.shortcut_openfile = QShortcut(QKeySequence("Ctrl+Shift+O"), self)  # 打开文件
-        self.shortcut_openfile.activated.connect(self.toolbox.OpenFile)
-        self.shortcut_savefile = QShortcut(QKeySequence("Ctrl+Shift+S"), self)  # 保存文件
-        self.shortcut_savefile.activated.connect(self.toolbox.SaveFile)
-        self.shortcut_gencommand = QShortcut(QKeySequence("Ctrl+Shift+C"), self)  # 生成指令
-        self.shortcut_gencommand.activated.connect(self.toolbox.GenerateCommand)
-        self.shortcut_caldye = QShortcut(QKeySequence("Ctrl+Shift+D"), self)  # 计算染料数量
-        self.shortcut_caldye.activated.connect(self.toolbox.CalculateDesignDye)
-        self.shortcut_focus_design_name = QShortcut(QKeySequence("Tab"), self)   # 将输入光标移动到下一个输入框
-        self.shortcut_focus_design_name.activated.connect(self.toolbox.UpdateFocus)
-        self.shortcut_padding_checkbox = QShortcut(QKeySequence("Shift+P"), self)   # 真实间隔选项开启/关闭
-        self.shortcut_padding_checkbox.activated.connect(lambda: self.toolbox.ui.ViewPaddingCheckBox.setChecked(not self.toolbox.ui.ViewPaddingCheckBox.isChecked()))
-        self.shortcut_realtime_checkbox = QShortcut(QKeySequence("Shift+D"), self)   # 实时渲染示选项开启/关闭
-        self.shortcut_realtime_checkbox.activated.connect(lambda: self.toolbox.ui.ViewRealtimeDisplayCheckBox.setChecked(not self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked()))
-        rowcol_operation = [["Ctrl+Up", True, True, False], ["Ctrl+Down", False, True, False], ["Ctrl+Left", False, False, False], ["Ctrl+Right", True, False, False],
-                     ["Shift+Up", True, True, True], ["Shift+Down", False, True, True], ["Shift+Left", False, False, True], ["Shift+Right", True, False, True]]
-        self.shortcut_rowcol_operation = [QShortcut(QKeySequence(f"{rc[0]}"), self)  # 行列增删
-                                    for rc in rowcol_operation]
-        for i, shortcut in enumerate(self.shortcut_rowcol_operation):
-            shortcut.activated.connect(lambda idx=i: self.toolbox.RowColumnOperation(*rowcol_operation[idx][1:]))
-
         # 多键操作
         self.multi_key_sequence = ""
-        self.multi_key = ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
-        self.shortcut_multikey = [QShortcut(QKeySequence(key), self) for key in self.multi_key]
-        for i, shortcut in enumerate(self.shortcut_multikey):
-            shortcut.activated.connect(lambda idx=i: self.MultiKey(self.multi_key[idx]))
+
+        # 快捷键响应变量, 使一般键只会触发一次
+        self.keyevent_filpflop = True
+
+        self.installEventFilter(self)
+
+    # 按键显示与快捷键响应
+    def eventFilter(self, obj, event):
+        if event.type() == event.KeyPress or event.type() == event.KeyRelease:
+            key = event.key()
+            modifiers = event.modifiers()  # 获取修饰键状态
+
+            # 方向键只会触发KeyRelease, 而其它键两者均触发
+            if key not in [Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down, Qt.Key_Tab]:
+                if not self.keyevent_filpflop:
+                    self.keyevent_filpflop = True
+                    return super().eventFilter(obj, event)
+                else:
+                    self.keyevent_filpflop = False
+            
+            # 检查是否按下某个修饰键
+            _is_ctrl = bool(modifiers & Qt.ControlModifier)  # 检查Ctrl
+            _is_shift = bool(modifiers & Qt.ShiftModifier)    # 检查Shift
+            is_pure = not _is_ctrl and not _is_shift
+            is_ctrl = _is_ctrl and not _is_shift
+            is_shift = _is_shift and not _is_ctrl
+            is_ctrl_shift = _is_ctrl and _is_shift
+
+            # 按键显示
+            key_show_str = tools.key_to_text(key)
+            if key == Qt.Key_Control or key == Qt.Key_Shift:
+                if is_shift:
+                    key_show_str = "Shift"
+                elif is_ctrl:
+                    key_show_str = "Ctrl"
+                elif is_ctrl_shift:
+                    key_show_str = "Ctrl+Shift"
+            else:
+                if is_shift:
+                    key_show_str = "Shift+" + key_show_str
+                elif is_ctrl:
+                    key_show_str = "Ctrl+" + key_show_str
+                elif is_ctrl_shift:
+                    key_show_str = "Ctrl+Shift+" + key_show_str
+            self.toolbox.ui.KeyShow.setText(key_show_str)
+
+            # 快捷键响应
+            if key == Qt.Key_H and is_pure:  # 水平翻转
+                self.single_banner_designer.HorizonalFlip()
+            elif key == Qt.Key_V and is_pure:  # 垂直翻转
+                self.single_banner_designer.VerticalFlip()
+            elif key == Qt.Key_Plus and is_shift:  # 添加空图案
+                self.single_banner_designer.AddPattern()
+            elif key == Qt.Key_Delete and is_pure:  # 清空图案
+                self.single_banner_designer.ClearPattern()
+            elif key == Qt.Key_Backspace and is_pure:  # 删除最后一个图案
+                self.single_banner_designer.OperatePattern(self.single_banner_designer.pattern_len - 1, 2)
+            elif key == Qt.Key_C and is_ctrl:  # 复制当前banner
+                self.single_banner_designer.CopyPattern()
+            elif key == Qt.Key_V and is_ctrl:  # 粘贴banner
+                self.single_banner_designer.PastePattern()
+            elif key == Qt.Key_Z and is_ctrl:  # 撤销
+                self.single_banner_designer.Undo()
+            elif key == Qt.Key_X and is_ctrl:  # 重做
+                self.single_banner_designer.Redo()
+            elif key == Qt.Key_S and is_ctrl:  # 保存banner并更新
+                self.single_banner_designer.CopyPattern()
+            elif key == Qt.Key_Equal and is_ctrl:  # 放大
+                self.toolbox.SetZoom(True)
+            elif key == Qt.Key_Minus and is_ctrl:  # 缩小
+                self.toolbox.SetZoom(False)
+            elif key == Qt.Key_N and is_ctrl:  # 选择/新建设计
+                self.toolbox.SelectDesign()
+            elif key == Qt.Key_F and is_ctrl:  # 搜索设计
+                self.toolbox.SearchDesign()
+            elif key == Qt.Key_O and is_ctrl_shift:  # 打开文件
+                self.toolbox.OpenFile()
+            elif key == Qt.Key_S and is_ctrl_shift:  # 保存文件
+                self.toolbox.SaveFile()
+            elif key == Qt.Key_C and is_ctrl_shift:  # 生成指令
+                self.toolbox.GenerateCommand()
+            elif key == Qt.Key_D and is_ctrl_shift:  # 计算染料数量
+                self.toolbox.CalculateDesignDye()
+            elif key == Qt.Key_Tab and is_pure:  # 将输入光标移动到下一个输入框
+                self.toolbox.UpdateFocus()
+            elif key == Qt.Key_P and is_shift:  # 真实间隔选项开启/关闭
+                self.toolbox.ui.ViewPaddingCheckBox.setChecked(not self.toolbox.ui.ViewPaddingCheckBox.isChecked())
+            elif key == Qt.Key_D and is_shift:  # 实时渲染示选项开启/关闭
+                self.toolbox.ui.ViewRealtimeDisplayCheckBox.setChecked(not self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked())
+
+            for i, k in enumerate([Qt.Key_1, Qt.Key_2, Qt.Key_3, Qt.Key_4, Qt.Key_5, Qt.Key_6, Qt.Key_7, Qt.Key_8, 
+                        Qt.Key_9, Qt.Key_0, Qt.Key_T, Qt.Key_Y, Qt.Key_U, Qt.Key_I, Qt.Key_O, Qt.Key_P]):
+                if k == event.key():
+                    if is_pure:  # 设置最后一个图案颜色
+                        self.single_banner_designer.SetLastPatternColor(i)
+                    elif is_ctrl:  # 设置旗帜颜色
+                        self.single_banner_designer.ui.BannerColorComboBox.setCurrentIndex(i)
+                    elif is_shift:  # 设置背景颜色
+                        self.toolbox.SetDefaultBackgroundColor(i)
+
+            for i, k in enumerate([Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right]):
+                if k == event.key():
+                    if is_pure:  # 选择当前编辑的banner
+                        self.LoadBanner([DataStorage.get_instance().banner_pos[0] + (int(i == 0) - int(i == 1)), DataStorage.get_instance().banner_pos[1] + (int(i == 3) - int(i == 2))])
+                    elif is_ctrl or is_shift:  # 增删行列
+                        self.toolbox.RowColumnOperation((i == 0 or i == 3), (i == 0 or i == 1), is_shift)
+
+            for i, k in enumerate([Qt.Key_Q, Qt.Key_W, Qt.Key_E, Qt.Key_A, Qt.Key_S, Qt.Key_D, Qt.Key_Z, Qt.Key_X, Qt.Key_C]):
+                if k == event.key():
+                    if is_pure:
+                        multi_key = ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
+                        self.MultiKey(multi_key[i])
+
+
+        return super().eventFilter(obj, event)
         
     def resizeEvent(self, a0):
         super().resizeEvent(a0)

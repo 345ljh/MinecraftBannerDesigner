@@ -155,6 +155,13 @@ class Ui_ToolBox(object):
         self.UtilsAuthorButton = QtWidgets.QPushButton(ToolBox)
         self.UtilsAuthorButton.setGeometry(QtCore.QRect(130, 570, 91, 41))
         self.UtilsAuthorButton.setObjectName("UtilsAuthorButton")
+        self.KeyShow = QtWidgets.QLabel(ToolBox)
+        self.KeyShow.setGeometry(QtCore.QRect(10, 840, 301, 51))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.KeyShow.setFont(font)
+        self.KeyShow.setText("")
+        self.KeyShow.setObjectName("KeyShow")
 
         self.retranslateUi(ToolBox)
         QtCore.QMetaObject.connectSlotsByName(ToolBox)

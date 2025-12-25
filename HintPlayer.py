@@ -14,12 +14,14 @@ class HintPlayer(QMainWindow):
         self.images = []
         self.current_index = 0
         
+        self.__setupStyles()
         self.__initUI()
         self.__loadImages()
         
     def __initUI(self):
         """初始化现代化UI"""
         self.setWindowTitle('使用提示（可按←或→翻页）')
+        self.setWindowIcon(QIcon("images/icon.png"))
         self.setMinimumSize(400, 225)  # 最小保持16:9
         
         # 创建中央部件
@@ -36,13 +38,6 @@ class HintPlayer(QMainWindow):
         self.image_label.setAlignment(Qt.AlignCenter)
         self.image_label.setMinimumSize(100, 100)
         
-        # 应用图片区域样式
-        self.image_label.setStyleSheet("""
-            QLabel {
-                background-color: #1a1a1a;
-                border: none;
-            }
-        """)
         
         layout.addWidget(self.image_label, 0, 0, 1, 3)
         
@@ -50,33 +45,16 @@ class HintPlayer(QMainWindow):
         self.overlay_left = QLabel(self.image_label)
         self.overlay_left.setAlignment(Qt.AlignCenter)
         self.overlay_left.setText("◀")
-        self.overlay_left.setStyleSheet("""
-            QLabel {
-                background-color: rgba(0, 0, 0, 100);
-                color: white;
-                font-size: 40px;
-                font-weight: bold;
-                border: none;
-                padding: 0;
-                margin: 0;
-            }
-        """)
         self.overlay_left.hide()
         
         self.overlay_right = QLabel(self.image_label)
         self.overlay_right.setAlignment(Qt.AlignCenter)
         self.overlay_right.setText("▶")
-        self.overlay_right.setStyleSheet(self.overlay_left.styleSheet())
         self.overlay_right.hide()
         
         # 底部控制栏
         control_panel = QWidget()
         control_panel.setFixedHeight(60)
-        control_panel.setStyleSheet("""
-            QWidget {
-                background-color: #2d2d2d;
-            }
-        """)
         
         control_layout = QHBoxLayout(control_panel)
         control_layout.setContentsMargins(20, 10, 20, 10)
@@ -103,16 +81,6 @@ class HintPlayer(QMainWindow):
         # 页码指示器
         self.page_indicator = QLabel()
         self.page_indicator.setAlignment(Qt.AlignCenter)
-        self.page_indicator.setStyleSheet("""
-            QLabel {
-                color: #ffffff;
-                font-size: 14px;
-                font-weight: bold;
-                padding: 5px 15px;
-                background-color: #404040;
-                border-radius: 10px;
-            }
-        """)
         nav_layout.addWidget(self.page_indicator)
         
         nav_layout.addStretch(1)
@@ -122,40 +90,22 @@ class HintPlayer(QMainWindow):
         
         layout.addWidget(control_panel, 1, 0, 1, 3)
         
-        # 应用窗口样式
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #1e1e1e;
-            }
-        """)
         
+    def __setupStyles(self):
+        """统一设置应用样式表"""
+        # 加载字体
+        font_id = QFontDatabase.addApplicationFont("./images/zpix.ttf")
+        font_families = QFontDatabase.applicationFontFamilies(font_id)
+        pix_font_family = font_families[0] if font_families else "Arial"
+        # 应用样式表到整个应用
+        import utils.stylesheet
+        self.setStyleSheet(utils.stylesheet.style_sheet)
+
     def __createNavButton(self, icon, tooltip=""):
         """创建导航按钮"""
         button = QPushButton(icon)
         button.setFixedSize(40, 40)
         button.setToolTip(tooltip)
-        button.setStyleSheet("""
-            QPushButton {
-                background-color: #404040;
-                color: white;
-                border: 2px solid #505050;
-                border-radius: 20px;
-                font-size: 18px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #505050;
-                border-color: #606060;
-            }
-            QPushButton:pressed {
-                background-color: #303030;
-            }
-            QPushButton:disabled {
-                background-color: #303030;
-                color: #606060;
-                border-color: #404040;
-            }
-        """)
         return button
         
     def __loadImages(self):

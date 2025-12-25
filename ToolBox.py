@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QApplication, QShortcut, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
+from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QScrollArea, QVBoxLayout,
 QSizePolicy, QPushButton, QFileDialog, QApplication, QMessageBox)
 from PyQt5.QtCore import Qt, pyqtSignal
 import sys, os
@@ -55,8 +55,18 @@ class ToolBox(QWidget):
             self.ui.ViewLabel, self.ui.ViewPaddingCheckBox, self.ui.ViewZoomLabel, self.ui.ViewZoomUpButton, self.ui.ViewZoomDownButton, self.ui.ViewRealtimeDisplayCheckBox,
             self.ui.ViewBackgroundColorLabel, self.ui.ViewBackgroundRedSchollbar, self.ui.ViewBackgroundGreenSchollbar, self.ui.ViewBackgroundBlueSchollbar,
             self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton, self.ui.UtilsAuthorButton, self.ui.UtilsUpdateButton,
+            self.ui.KeyShow
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
+
+        self.installEventFilter(self)
+
+    # 然后添加：
+    def eventFilter(self, obj, event):
+        if event.type() == event.KeyPress:
+            print(f"按键: {event.key()}")
+
+        return super().eventFilter(obj, event)
         
     def resizeEvent(self, a0):
         super().resizeEvent(a0)
@@ -309,7 +319,7 @@ class ToolBox(QWidget):
             for idx in range((len(banner) - 1) // 2):
                 if banner[2 * idx + 1] != 0:
                     dye[banner[2 * idx + 2]] += 1
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setWindowTitle("染料计算")
 
         htm_str = ""
@@ -339,8 +349,8 @@ class ToolBox(QWidget):
             QMessageBox.information(self, '检查更新', f'当前已是最新版本({new_version})')
             return
         else:
-            msg = QMessageBox()
-            msg.setWindowTitle("检查更新")
+            msg = QMessageBox(self)
+            msg.setWindowTitle("发现新版本")
             msg.setText(f"当前版本: {vc.current_version}\n最新版本: {new_version}")
             download_button = QPushButton("下载")
             download_button.clicked.connect(vc.get_update)

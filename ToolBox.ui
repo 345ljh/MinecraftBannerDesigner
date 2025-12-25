@@ -530,6 +530,24 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <string>关于作者</string>
    </property>
   </widget>
+  <widget class="QLabel" name="KeyShow">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>840</y>
+     <width>301</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
