@@ -50,9 +50,6 @@ class MainWindow(QWidget):
         # 多键操作
         self.multi_key_sequence = ""
 
-        # 快捷键响应变量, 使一般键只会触发一次
-        self.keyevent_filpflop = True
-
         self.installEventFilter(self)
 
     # 按键显示与快捷键响应
@@ -62,12 +59,8 @@ class MainWindow(QWidget):
             modifiers = event.modifiers()  # 获取修饰键状态
 
             # 方向键只会触发KeyRelease, 而其它键两者均触发
-            if key not in [Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down, Qt.Key_Tab]:
-                if not self.keyevent_filpflop:
-                    self.keyevent_filpflop = True
-                    return super().eventFilter(obj, event)
-                else:
-                    self.keyevent_filpflop = False
+            if key not in [Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down, Qt.Key_Tab] and event.type() == event.KeyRelease:
+                return super().eventFilter(obj, event)
             
             # 检查是否按下某个修饰键
             _is_ctrl = bool(modifiers & Qt.ControlModifier)  # 检查Ctrl
@@ -95,12 +88,18 @@ class MainWindow(QWidget):
                     key_show_str = "Ctrl+Shift+" + key_show_str
             self.toolbox.ui.KeyShow.setText(key_show_str)
 
+            # 最上面一排即1~=, 按shift时替换为正常
+            first_row = [Qt.Key_1, Qt.Key_2, Qt.Key_3, Qt.Key_4, Qt.Key_5, Qt.Key_6, Qt.Key_7, Qt.Key_8, Qt.Key_9, Qt.Key_0, Qt.Key_Minus, Qt.Key_Equal]
+            first_row_shift = [Qt.Key_Exclam, Qt.Key_At, Qt.Key_NumberSign, Qt.Key_Dollar, Qt.Key_Percent, Qt.Key_AsciiCircum, Qt.Key_Ampersand, Qt.Key_Asterisk, Qt.Key_ParenLeft, Qt.Key_ParenRight, Qt.Key_Underscore, Qt.Key_Plus]
+            if key in first_row_shift:
+                key = first_row[first_row_shift.index(key)]
+
             # 快捷键响应
             if key == Qt.Key_H and is_pure:  # 水平翻转
                 self.single_banner_designer.HorizonalFlip()
             elif key == Qt.Key_V and is_pure:  # 垂直翻转
                 self.single_banner_designer.VerticalFlip()
-            elif key == Qt.Key_Plus and is_shift:  # 添加空图案
+            elif key == Qt.Key_Equal and is_shift:  # 添加空图案
                 self.single_banner_designer.AddPattern()
             elif key == Qt.Key_Delete and is_pure:  # 清空图案
                 self.single_banner_designer.ClearPattern()
@@ -115,7 +114,7 @@ class MainWindow(QWidget):
             elif key == Qt.Key_X and is_ctrl:  # 重做
                 self.single_banner_designer.Redo()
             elif key == Qt.Key_S and is_ctrl:  # 保存banner并更新
-                self.single_banner_designer.CopyPattern()
+                self.single_banner_designer.UpdateBanner()
             elif key == Qt.Key_Equal and is_ctrl:  # 放大
                 self.toolbox.SetZoom(True)
             elif key == Qt.Key_Minus and is_ctrl:  # 缩小
@@ -134,14 +133,14 @@ class MainWindow(QWidget):
                 self.toolbox.CalculateDesignDye()
             elif key == Qt.Key_Tab and is_pure:  # 将输入光标移动到下一个输入框
                 self.toolbox.UpdateFocus()
-            elif key == Qt.Key_P and is_shift:  # 真实间隔选项开启/关闭
+            elif key == Qt.Key_M and is_shift:  # 真实间隔选项开启/关闭
                 self.toolbox.ui.ViewPaddingCheckBox.setChecked(not self.toolbox.ui.ViewPaddingCheckBox.isChecked())
             elif key == Qt.Key_D and is_shift:  # 实时渲染示选项开启/关闭
                 self.toolbox.ui.ViewRealtimeDisplayCheckBox.setChecked(not self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked())
 
             for i, k in enumerate([Qt.Key_1, Qt.Key_2, Qt.Key_3, Qt.Key_4, Qt.Key_5, Qt.Key_6, Qt.Key_7, Qt.Key_8, 
                         Qt.Key_9, Qt.Key_0, Qt.Key_T, Qt.Key_Y, Qt.Key_U, Qt.Key_I, Qt.Key_O, Qt.Key_P]):
-                if k == event.key():
+                if k == key:
                     if is_pure:  # 设置最后一个图案颜色
                         self.single_banner_designer.SetLastPatternColor(i)
                     elif is_ctrl:  # 设置旗帜颜色
@@ -150,14 +149,14 @@ class MainWindow(QWidget):
                         self.toolbox.SetDefaultBackgroundColor(i)
 
             for i, k in enumerate([Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right]):
-                if k == event.key():
+                if k == key:
                     if is_pure:  # 选择当前编辑的banner
                         self.LoadBanner([DataStorage.get_instance().banner_pos[0] + (int(i == 0) - int(i == 1)), DataStorage.get_instance().banner_pos[1] + (int(i == 3) - int(i == 2))])
                     elif is_ctrl or is_shift:  # 增删行列
                         self.toolbox.RowColumnOperation((i == 0 or i == 3), (i == 0 or i == 1), is_shift)
 
             for i, k in enumerate([Qt.Key_Q, Qt.Key_W, Qt.Key_E, Qt.Key_A, Qt.Key_S, Qt.Key_D, Qt.Key_Z, Qt.Key_X, Qt.Key_C]):
-                if k == event.key():
+                if k == key:
                     if is_pure:
                         multi_key = ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
                         self.MultiKey(multi_key[i])

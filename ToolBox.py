@@ -58,15 +58,6 @@ class ToolBox(QWidget):
             self.ui.KeyShow
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
-
-        self.installEventFilter(self)
-
-    # 然后添加：
-    def eventFilter(self, obj, event):
-        if event.type() == event.KeyPress:
-            print(f"按键: {event.key()}")
-
-        return super().eventFilter(obj, event)
         
     def resizeEvent(self, a0):
         super().resizeEvent(a0)
@@ -277,7 +268,9 @@ class ToolBox(QWidget):
 
                         command += f'''BlockEntityTag:{{Patterns:['''
 
-                        for k in range(pattern.MAX_BANNER):
+                        print(now_banner)
+
+                        for k in range((len(now_banner) - 1) // 2):
                             try:
                                 if int(now_banner[2 * k + 1]) != 0:
                                     command += f"{{Pattern:\"{pattern.type[int(now_banner[2 * k + 1])]}\",Color:{now_banner[2 * k + 2]}}},"
@@ -311,11 +304,13 @@ class ToolBox(QWidget):
 
     def CalculateDesignDye(self):
         dye = [0] * 16
+        empty_banner = [0] * 16
         for key in DataStorage.get_instance().current_design_patterns:
             banner = [int(i) for i in DataStorage.get_instance().current_design_patterns[key].split(":")]
             if banner[0] == 16:
                 continue
-            dye[banner[0]] += 6
+            # dye[banner[0]] += 6
+            empty_banner[banner[0]] += 1
             for idx in range((len(banner) - 1) // 2):
                 if banner[2 * idx + 1] != 0:
                     dye[banner[2 * idx + 2]] += 1
@@ -325,7 +320,7 @@ class ToolBox(QWidget):
         htm_str = ""
         for i in range(16):
             htm_str += f'''
-            <p>{str(dye[i])}</p>
+            <p>{str(dye[i] + empty_banner[i] * 6)}({empty_banner[i]}面旗帜*6+{dye[i]}次染色)</p>
             <img src="images/dyes/{str(i)}.png" width="26" height="26">
             '''
         

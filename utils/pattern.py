@@ -1,7 +1,5 @@
 import cv2
 
-MAX_BANNER = 6
-
 color = {
     "white": [239, 239, 239],
     "orange": [239, 124, 28],
@@ -89,13 +87,6 @@ def getIcon(n = ""):
         return icon
     else:
         return icon[n]
-
-def getDefaultBannerStr():
-    # 格式类似16:0:0:0:0:0:0:0:0:0:0:0:0
-    str = "16:"
-    for i in range(MAX_BANNER):
-        str += "0:0:"
-    return str[:-1]
 
 if __name__ == "__main__":
     named_window = cv2.namedWindow("aaa")
