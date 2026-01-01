@@ -50,6 +50,8 @@ class MainWindow(QWidget):
         # 多键操作
         self.multi_key_sequence = ""
 
+        self.toolbox.CheckUpdate(isSilent=True)
+
         self.installEventFilter(self)
 
     # 按键显示与快捷键响应
@@ -137,6 +139,8 @@ class MainWindow(QWidget):
                 self.toolbox.ui.ViewPaddingCheckBox.setChecked(not self.toolbox.ui.ViewPaddingCheckBox.isChecked())
             elif key == Qt.Key_D and is_shift:  # 实时渲染示选项开启/关闭
                 self.toolbox.ui.ViewRealtimeDisplayCheckBox.setChecked(not self.toolbox.ui.ViewRealtimeDisplayCheckBox.isChecked())
+            elif key == Qt.Key_Delete and is_ctrl:  # 旗帜背景颜色为空
+                self.single_banner_designer.ui.BannerColorComboBox.setCurrentIndex(16)
 
             for i, k in enumerate([Qt.Key_1, Qt.Key_2, Qt.Key_3, Qt.Key_4, Qt.Key_5, Qt.Key_6, Qt.Key_7, Qt.Key_8, 
                         Qt.Key_9, Qt.Key_0, Qt.Key_T, Qt.Key_Y, Qt.Key_U, Qt.Key_I, Qt.Key_O, Qt.Key_P]):

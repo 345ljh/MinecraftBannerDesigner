@@ -48,6 +48,7 @@ class ToolBox(QWidget):
         self.ui.ViewBackgroundBlueSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.UtilsShortCutButton.clicked.connect(self.__openHintPlayer)
         self.ui.UtilsUpdateButton.clicked.connect(self.CheckUpdate)
+        self.ui.UtilsAuthorButton.clicked.connect(self.ShowAuthorInfo)
 
         self.adaptive_components = [
             self.ui.FileLabel, self.ui.FilePathText, self.ui.FileLoadButton, self.ui.FileSaveButton,
@@ -247,6 +248,7 @@ class ToolBox(QWidget):
         '''生成指令'''
         command = ""
         generated_num = 0
+        isover6 = False  # 是否有>6次染色的旗帜
 
         for i in range(DataStorage.get_instance().current_design_size[0] - 1):
             _i = DataStorage.get_instance().current_design_size[0] - i - 1
@@ -255,6 +257,8 @@ class ToolBox(QWidget):
                 if f"{_i}:{j}" not in DataStorage.get_instance().current_design_patterns:
                     continue
                 now_banner = DataStorage.get_instance().current_design_patterns[f"{_i}:{j}"].split(":")
+                if(len(now_banner) > 13):
+                    isover6 = True
 
                 if now_banner[0] != "16":
                     if generated_num % 27 == 0:
@@ -267,8 +271,6 @@ class ToolBox(QWidget):
                     if not all(x == '0' for x in now_banner[1::2]):
 
                         command += f'''BlockEntityTag:{{Patterns:['''
-
-                        print(now_banner)
 
                         for k in range((len(now_banner) - 1) // 2):
                             try:
@@ -300,7 +302,10 @@ class ToolBox(QWidget):
         
         clipboard = app.clipboard()
         clipboard.setText(command)
-        QMessageBox.information(self, '生成成功！', f'已复制指令到剪贴板，共{(generated_num - 1) // 27 + 1}条')
+        text = f'已复制指令到剪贴板，共{(generated_num - 1) // 27 + 1}条'
+        if isover6:
+            text += '，存在大于6次染色的旗帜'
+        QMessageBox.information(self, '生成成功！', text)
 
     def CalculateDesignDye(self):
         dye = [0] * 16
@@ -334,14 +339,48 @@ class ToolBox(QWidget):
         msg.setText(html_content)
         msg.exec_()
 
-    def CheckUpdate(self):
+    def ShowAuthorInfo(self):
+        msg = QMessageBox(self)
+        msg.setWindowTitle("神秘内容")
+        html_content = '''
+        <style>a {color: inherit; text-decoration: none;}</style>
+        <div>
+            <img src="images/userheads/1.png" width="32" height="32">
+            <font size=4><a href="https://www.bilibili.com/video/BV1nqi3BWE61/">介绍视频</a></font>
+        </div><div>
+            <img src="images/userheads/2.png" width="32" height="32">
+            <font size=4><a href="https://github.com/345ljh/MinecraftBannerDesigner">编辑器开源(GitHub)</a></font>
+        </div><div>
+            <img src="images/userheads/5.png" width="32" height="32">
+            <font size=4><a href="https://space.bilibili.com/506932686">iliqiIiq</a></font>
+        </div><div>
+        <font size=3>主要开发成员</font>
+        </div><div>
+            <img src="images/userheads/3.png" width="32" height="32">
+            <font size=4><a href="https://space.bilibili.com/503514777">神奇矿工王百五</a></font>
+        </div><div>
+        <font size=3>旗帜画&旗帜汉字up，持续更新一级字中</font>
+        </div><div>
+            <img src="images/userheads/4.png" width="32" height="32">
+            <font size=4><a href="https://space.bilibili.com/3690991626226222">形意流芳计划</a></font>
+        </div><div>
+            <font size=3>旗帜还原高校校徽计划</font>
+        </div><div>
+            
+        '''
+        msg.setText(html_content)
+        msg.exec_()
+
+    def CheckUpdate(self, isSilent: bool = False):
         import utils.VersionController as vc
         new_version = vc.get_version()
         if new_version == -1:
-            QMessageBox.information(self, '检查更新失败', '请检查网络连接')
+            if not isSilent:
+                QMessageBox.information(self, '检查更新失败', '请检查网络连接')
             return
         elif vc.current_version >= new_version:
-            QMessageBox.information(self, '检查更新', f'当前已是最新版本({new_version})')
+            if not isSilent:
+                QMessageBox.information(self, '检查更新', f'当前已是最新版本({new_version})')
             return
         else:
             msg = QMessageBox(self)

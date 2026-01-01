@@ -200,7 +200,7 @@ class Ui_ToolBox(object):
         self.ViewRealtimeDisplayCheckBox.setText(_translate("ToolBox", "开启实时渲染"))
         self.ViewBackgroundColorLabel.setText(_translate("ToolBox", "设置背景颜色"))
         self.UtilsUpdateButton.setText(_translate("ToolBox", "检查更新"))
-        self.UtilsAuthorButton.setText(_translate("ToolBox", "关于作者"))
+        self.UtilsAuthorButton.setText(_translate("ToolBox", "神秘内容"))
 
 
 if __name__ == "__main__":

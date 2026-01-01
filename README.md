@@ -2,6 +2,7 @@
 一个功能完整的 Minecraft 旗帜离线设计工具，基于 Python 和 PyQt5 开发，无需连接游戏即可设计和预览旗帜图案，并支持MC指令导出，旨在让大型旗帜图案设计、分享更加简单和高效。  
 使用说明可参考```\images\hint```下图片，或在编辑器内打开“快捷键提示”界面。  
 
+介绍视频：https://www.bilibili.com/video/BV1nqi3BWE61/
 前代演示：https://www.bilibili.com/video/BV1KZ4y1R7t6  
 
 ## 更新日志  

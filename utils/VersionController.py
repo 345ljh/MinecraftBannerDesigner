@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 # 版本更新时需修改current_version, 同时将对应内容写入version.txt上传OSS
 # OSS为公共read且仅支持网页内手动write
 # current_version需严格递增
-current_version = 251224  # 当前版本(int)
+current_version = 260101  # 当前版本(int)
 
 def get_version():
     """从OSS获取版本号"""

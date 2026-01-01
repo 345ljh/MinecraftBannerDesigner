@@ -527,7 +527,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </rect>
    </property>
    <property name="text">
-    <string>关于作者</string>
+    <string>神秘内容</string>
    </property>
   </widget>
   <widget class="QLabel" name="KeyShow">
