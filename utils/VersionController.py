@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 # 版本更新时需修改current_version, 同时将对应内容写入version.txt上传OSS
 # OSS为公共read且仅支持网页内手动write
 # current_version需严格递增
-current_version = 260101  # 当前版本(int)
+current_version = 260217  # 当前版本(int)
 
 def get_version():
     """从OSS获取版本号"""
@@ -18,6 +18,22 @@ def get_version():
     except Exception as e:  # 一般是网络错误
         return -1
 
+# 旗帜文件公开与分享(/banners路径下), 目前仅管理员在客户端上传
+# 所有文件均以"标题-作者.banner"格式命名
+def get_file_list():
+    auth = oss2.AnonymousAuth()
+    bucket = oss2.Bucket(auth, 'https://oss-cn-shenzhen.aliyuncs.com', 'minecraft-banner-designer')
+    prefix = 'banners/'
+
+    # 获取文件List: "title-author": "size(bytes)"
+    file_list = {}
+    for obj in oss2.ObjectIterator(bucket, prefix=prefix):
+        if obj.key != prefix:
+            file_list[obj.key.replace(prefix, '').replace('.banner', '')] = obj.size
+
+    return file_list
+
+
 def get_update():
     """获取更新内容"""
     try:
@@ -30,3 +46,6 @@ def get_update():
 
     except Exception as e:
         QMessageBox.information(None, '提示', '网络错误，请检查网络连接后重试')
+
+if __name__ == '__main__':
+    print(get_file_list())

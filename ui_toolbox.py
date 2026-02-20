@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\ToolBox.ui'
+# Form implementation generated from reading ui file 'ToolBox.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -103,13 +103,13 @@ class Ui_ToolBox(object):
         self.UtilsLabel.setStyleSheet("background: transparent")
         self.UtilsLabel.setObjectName("UtilsLabel")
         self.UtilsGenCommandButton = QtWidgets.QPushButton(ToolBox)
-        self.UtilsGenCommandButton.setGeometry(QtCore.QRect(20, 510, 91, 41))
+        self.UtilsGenCommandButton.setGeometry(QtCore.QRect(30, 510, 101, 41))
         self.UtilsGenCommandButton.setObjectName("UtilsGenCommandButton")
         self.UtilsDyeCalcButton = QtWidgets.QPushButton(ToolBox)
-        self.UtilsDyeCalcButton.setGeometry(QtCore.QRect(130, 510, 91, 41))
+        self.UtilsDyeCalcButton.setGeometry(QtCore.QRect(150, 510, 101, 41))
         self.UtilsDyeCalcButton.setObjectName("UtilsDyeCalcButton")
         self.UtilsShortCutButton = QtWidgets.QPushButton(ToolBox)
-        self.UtilsShortCutButton.setGeometry(QtCore.QRect(240, 510, 101, 41))
+        self.UtilsShortCutButton.setGeometry(QtCore.QRect(270, 510, 101, 41))
         self.UtilsShortCutButton.setObjectName("UtilsShortCutButton")
         self.ViewRealtimeDisplayCheckBox = QtWidgets.QCheckBox(ToolBox)
         self.ViewRealtimeDisplayCheckBox.setGeometry(QtCore.QRect(220, 330, 161, 31))
@@ -150,10 +150,10 @@ class Ui_ToolBox(object):
         self.ViewBackgroundBlueSchollbar.setInvertedControls(True)
         self.ViewBackgroundBlueSchollbar.setObjectName("ViewBackgroundBlueSchollbar")
         self.UtilsUpdateButton = QtWidgets.QPushButton(ToolBox)
-        self.UtilsUpdateButton.setGeometry(QtCore.QRect(20, 570, 91, 41))
+        self.UtilsUpdateButton.setGeometry(QtCore.QRect(30, 570, 101, 41))
         self.UtilsUpdateButton.setObjectName("UtilsUpdateButton")
         self.UtilsAuthorButton = QtWidgets.QPushButton(ToolBox)
-        self.UtilsAuthorButton.setGeometry(QtCore.QRect(130, 570, 91, 41))
+        self.UtilsAuthorButton.setGeometry(QtCore.QRect(270, 570, 101, 41))
         self.UtilsAuthorButton.setObjectName("UtilsAuthorButton")
         self.KeyShow = QtWidgets.QLabel(ToolBox)
         self.KeyShow.setGeometry(QtCore.QRect(10, 840, 301, 51))
@@ -162,6 +162,9 @@ class Ui_ToolBox(object):
         self.KeyShow.setFont(font)
         self.KeyShow.setText("")
         self.KeyShow.setObjectName("KeyShow")
+        self.UtilsShareHubButton = QtWidgets.QPushButton(ToolBox)
+        self.UtilsShareHubButton.setGeometry(QtCore.QRect(150, 570, 101, 41))
+        self.UtilsShareHubButton.setObjectName("UtilsShareHubButton")
 
         self.retranslateUi(ToolBox)
         QtCore.QMetaObject.connectSlotsByName(ToolBox)
@@ -201,6 +204,7 @@ class Ui_ToolBox(object):
         self.ViewBackgroundColorLabel.setText(_translate("ToolBox", "设置背景颜色"))
         self.UtilsUpdateButton.setText(_translate("ToolBox", "检查更新"))
         self.UtilsAuthorButton.setText(_translate("ToolBox", "神秘内容"))
+        self.UtilsShareHubButton.setText(_translate("ToolBox", "设计工坊"))
 
 
 if __name__ == "__main__":

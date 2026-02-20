@@ -343,9 +343,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="UtilsGenCommandButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>510</y>
-     <width>91</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -356,9 +356,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="UtilsDyeCalcButton">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>150</x>
      <y>510</y>
-     <width>91</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -369,7 +369,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="UtilsShortCutButton">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>270</x>
      <y>510</y>
      <width>101</width>
      <height>41</height>
@@ -507,9 +507,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="UtilsUpdateButton">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>570</y>
-     <width>91</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -520,9 +520,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <widget class="QPushButton" name="UtilsAuthorButton">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>270</x>
      <y>570</y>
-     <width>91</width>
+     <width>101</width>
      <height>41</height>
     </rect>
    </property>
@@ -546,6 +546,19 @@ li.checked::marker { content: &quot;\2612&quot;; }
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="UtilsShareHubButton">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>570</y>
+     <width>101</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>设计工坊</string>
    </property>
   </widget>
  </widget>

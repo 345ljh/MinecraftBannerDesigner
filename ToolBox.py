@@ -8,7 +8,7 @@ import utils.AdaptiveManager as AdaptiveManager
 import utils.pattern as pattern
 import utils.DataStorage as DataStorage
 import utils.tools as tools
-import HintPlayer
+import HintPlayer, ShareHub
 
 zoom_level_to_factor = [25,33,50,67,75,80,90,100,110,125,150,175,200,250,300,400,500]
 
@@ -47,6 +47,7 @@ class ToolBox(QWidget):
         self.ui.ViewBackgroundGreenSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.ViewBackgroundBlueSchollbar.valueChanged.connect(self.SetBackgroundColor)
         self.ui.UtilsShortCutButton.clicked.connect(self.__openHintPlayer)
+        self.ui.UtilsShareHubButton.clicked.connect(self.__openShareHub)
         self.ui.UtilsUpdateButton.clicked.connect(self.CheckUpdate)
         self.ui.UtilsAuthorButton.clicked.connect(self.ShowAuthorInfo)
 
@@ -55,7 +56,7 @@ class ToolBox(QWidget):
             self.ui.DesignLabel, self.ui.DesignNameHintLabel, self.ui.DesignNameText, self.ui.DesignSelectHintLabel, self.ui.DesignSelectComboBox, self.ui.DesignSearchButton, self.ui.DesignSelectButton, self.ui.DesignRowHintLabel, self.ui.DesignRowSpinBox, self.ui.DesignColumnHintLabel, self.ui.DesignColumnSpinBox,
             self.ui.ViewLabel, self.ui.ViewPaddingCheckBox, self.ui.ViewZoomLabel, self.ui.ViewZoomUpButton, self.ui.ViewZoomDownButton, self.ui.ViewRealtimeDisplayCheckBox,
             self.ui.ViewBackgroundColorLabel, self.ui.ViewBackgroundRedSchollbar, self.ui.ViewBackgroundGreenSchollbar, self.ui.ViewBackgroundBlueSchollbar,
-            self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton, self.ui.UtilsAuthorButton, self.ui.UtilsUpdateButton,
+            self.ui.UtilsLabel, self.ui.UtilsDyeCalcButton, self.ui.UtilsGenCommandButton, self.ui.UtilsShortCutButton, self.ui.UtilsAuthorButton, self.ui.UtilsUpdateButton, self.ui.UtilsShareHubButton,
             self.ui.KeyShow
         ]
         self.adaptive_manager = AdaptiveManager.AdaptiveManager(self, self.adaptive_components)
@@ -79,6 +80,16 @@ class ToolBox(QWidget):
         else:
             self.hint_player.raise_()  # 如果窗口已存在，将其提到最前
             self.hint_player.activateWindow()
+
+    def __openShareHub(self):
+        """打开分享中心窗口"""
+        self.share_hub = None
+        if self.share_hub is None or not self.share_hub.isVisible():
+            self.share_hub = ShareHub.ShareHub()
+            self.share_hub.show()
+        else:
+            self.share_hub.raise_()  # 如果窗口已存在，将其提到最前
+            self.share_hub.activateWindow()
 
     def OpenFile(self):
         path, _ = QFileDialog.getSaveFileName(self, "选择旗帜文件", "", "旗帜文件(*.banner)")
