@@ -94,7 +94,7 @@ class HintPlayer(QMainWindow):
     def __setupStyles(self):
         """统一设置应用样式表"""
         # 加载字体
-        font_id = QFontDatabase.addApplicationFont("./images/zpix.ttf")
+        font_id = QFontDatabase.addApplicationFont("./images/VonwaonBitmap-16px.ttf")
         font_families = QFontDatabase.applicationFontFamilies(font_id)
         pix_font_family = font_families[0] if font_families else "Arial"
         # 应用样式表到整个应用

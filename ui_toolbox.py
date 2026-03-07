@@ -199,7 +199,7 @@ class Ui_ToolBox(object):
         self.UtilsLabel.setText(_translate("ToolBox", "实用"))
         self.UtilsGenCommandButton.setText(_translate("ToolBox", "生成指令"))
         self.UtilsDyeCalcButton.setText(_translate("ToolBox", "染料计算"))
-        self.UtilsShortCutButton.setText(_translate("ToolBox", "快捷键提示"))
+        self.UtilsShortCutButton.setText(_translate("ToolBox", "使用提示"))
         self.ViewRealtimeDisplayCheckBox.setText(_translate("ToolBox", "开启实时渲染"))
         self.ViewBackgroundColorLabel.setText(_translate("ToolBox", "设置背景颜色"))
         self.UtilsUpdateButton.setText(_translate("ToolBox", "检查更新"))

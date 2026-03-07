@@ -376,7 +376,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </rect>
    </property>
    <property name="text">
-    <string>快捷键提示</string>
+    <string>使用提示</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="ViewRealtimeDisplayCheckBox">
