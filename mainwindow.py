@@ -146,7 +146,9 @@ class MainWindow(QWidget):
                         Qt.Key_9, Qt.Key_0, Qt.Key_T, Qt.Key_Y, Qt.Key_U, Qt.Key_I, Qt.Key_O, Qt.Key_P]):
                 if k == key:
                     if is_pure:  # 设置最后一个图案颜色
-                        self.single_banner_designer.SetLastPatternColor(i)
+                        # self.single_banner_designer.SetLastPatternColor(i)
+                        multi_key = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "t", "y", "u", "i", "o", "p"]
+                        self.MultiKey(multi_key[i])  # 单独按颜色键进入多键处理
                     elif is_ctrl:  # 设置旗帜颜色
                         self.single_banner_designer.ui.BannerColorComboBox.setCurrentIndex(i)
                     elif is_shift:  # 设置背景颜色
@@ -159,10 +161,10 @@ class MainWindow(QWidget):
                     elif is_ctrl or is_shift:  # 增删行列
                         self.toolbox.RowColumnOperation((i == 0 or i == 3), (i == 0 or i == 1), is_shift)
 
-            for i, k in enumerate([Qt.Key_Q, Qt.Key_W, Qt.Key_E, Qt.Key_A, Qt.Key_S, Qt.Key_D, Qt.Key_Z, Qt.Key_X, Qt.Key_C]):
+            for i, k in enumerate([Qt.Key_Q, Qt.Key_W, Qt.Key_E, Qt.Key_A, Qt.Key_S, Qt.Key_D, Qt.Key_Z, Qt.Key_X, Qt.Key_C, Qt.Key_R, Qt.Key_B]):
                 if k == key:
                     if is_pure:
-                        multi_key = ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
+                        multi_key = ["q", "w", "e", "a", "s", "d", "z", "x", "c", "r", "b"]
                         self.MultiKey(multi_key[i])
 
 
@@ -222,11 +224,34 @@ class MainWindow(QWidget):
     def MultiKey(self, key):
         '''多键操作, 一组键长度最大为5'''
         self.multi_key_sequence += key
+        print(self.multi_key_sequence)
         if len(self.multi_key_sequence) > 10:
             self.multi_key_sequence = self.multi_key_sequence[-5:]
+        # 多键序列添加图案
         for i in range(len(pattern.multi_operation)):
             if pattern.multi_operation[i] in self.multi_key_sequence:
                 self.single_banner_designer.AddPattern(i)
+                self.multi_key_sequence = ""
+
+        # 颜色键结尾, 根据前面的操作键对应不同功能
+        color_key = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "t", "y", "u", "i", "o", "p"]
+        if key in color_key:
+            if len(self.multi_key_sequence) >= 3 and self.multi_key_sequence[-3] == 'r':  # "r12": 一键替换所有操作颜色
+                if self.multi_key_sequence[-2] in color_key:
+                    self.toolbox.ReplaceAllBannerColor(0, color_key.index(self.multi_key_sequence[-2]), color_key.index(key))
+                    self.multi_key_sequence = ""
+                    self.design_previewer.Update()
+            elif len(self.multi_key_sequence) >= 2 and self.multi_key_sequence[-2] == 'r':
+                pass
+            elif len(self.multi_key_sequence) >= 3 and self.multi_key_sequence[-3] == 'b':  # "b12": 一键替换所有背景
+                if self.multi_key_sequence[-2] in color_key:
+                    self.toolbox.ReplaceAllBannerColor(1, color_key.index(self.multi_key_sequence[-2]), color_key.index(key))
+                    self.multi_key_sequence = ""
+                    self.design_previewer.Update()
+            elif len(self.multi_key_sequence) >= 2 and self.multi_key_sequence[-2] == 'b':
+                pass
+            else:
+                self.single_banner_designer.SetLastPatternColor(color_key.index(key))  # 更改最后一步操作的颜色
                 self.multi_key_sequence = ""
 
 

@@ -227,6 +227,22 @@ class ToolBox(QWidget):
         else:
             self.ui.DesignNameText.setText("设计名不能为空")
 
+    def ReplaceAllBannerColor(self, mode, color1, color2):
+        '''替换整个Design中的一种颜色'''
+        # mode=0替换染色步骤, =1替换旗帜颜色
+        current_patterns = DataStorage.get_instance().current_design_patterns
+        for banner_key in current_patterns:
+            _, banner_list = tools.StrBannerToList(current_patterns[banner_key])
+            if mode == 0:
+                for i in range(2, len(banner_list), 2):
+                    if banner_list[i] == color1:
+                        banner_list[i] = color2
+            elif mode == 1:
+                if banner_list[0] == color1:
+                    banner_list[0] = color2
+            DataStorage.get_instance().current_design_patterns[banner_key] = tools.ListToStrBanner(banner_list)
+            print(tools.ListToStrBanner(banner_list))
+
     def SaveCurrentDesign(self):
         '''保存当前设计到designs列表中'''
         cd = []
