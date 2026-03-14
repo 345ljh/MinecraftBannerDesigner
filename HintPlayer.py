@@ -111,7 +111,7 @@ class HintPlayer(QMainWindow):
     def __loadImages(self):
         """加载图片"""
         for i in range(PAGES):
-            img_path = f"images/hint/{i}.png"
+            img_path = f"images/hint/幻灯片{i+1}.png"
             pixmap = QPixmap(img_path)
             
             if not pixmap.isNull():

@@ -311,17 +311,13 @@ class ToolBox(QWidget):
 
                     if generated_num % 27 == 26:
                         # 指令后缀
-                        command += f''']}}}}
-                        ___________________________
-                        '''
+                        command += f''']}}}}\n___________________________\n'''
 
                     generated_num += 1
         
         if generated_num % 27 != 0:
             # 指令后缀
-            command += f''']}}}}
-            ___________________________
-            '''
+            command += f''']}}}}\n___________________________\n'''
         # 复制剪贴板
         app = QApplication.instance()
         if not app:

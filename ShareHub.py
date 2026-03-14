@@ -106,7 +106,7 @@ class ShareHub(QWidget):
     def init_ui(self):
         """初始化UI"""
         self.setFixedSize(900, 700)
-        self.setWindowTitle("设计工坊 - 测试版本")
+        self.setWindowTitle("设计工坊")
         self.setWindowIcon(QIcon("images/icon.png"))
 
         # 主布局

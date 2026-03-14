@@ -224,7 +224,6 @@ class MainWindow(QWidget):
     def MultiKey(self, key):
         '''多键操作, 一组键长度最大为5'''
         self.multi_key_sequence += key
-        print(self.multi_key_sequence)
         if len(self.multi_key_sequence) > 10:
             self.multi_key_sequence = self.multi_key_sequence[-5:]
         # 多键序列添加图案
